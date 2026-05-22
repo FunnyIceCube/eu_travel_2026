@@ -1129,6 +1129,7 @@
     const routeLayer = L.layerGroup().addTo(map);
     const AMAP_KEY_STORAGE = "amap_web_service_key";
     const serverConfig = window.EU_TRAVEL_CONFIG || {};
+    const AMAP_PROXY_BASE = serverConfig.amapProxyBase || "";
     let AMAP_WEB_SERVICE_KEY = serverConfig.amapWebServiceKey || localStorage.getItem(AMAP_KEY_STORAGE) || "";
     let activeDayId = "d0618";
     let currentRouteChoices = [];
@@ -1267,16 +1268,16 @@
       document.getElementById("routeStatus").innerHTML = html;
     }
 
-    function requireAmapKey() {
-      if (AMAP_WEB_SERVICE_KEY) return;
-      throw new Error("请先在上方保存高德 Web 服务 Key。Key 只保存在本机浏览器，不会上传到 GitHub。");
+    function requireAmapAccess() {
+      if (AMAP_PROXY_BASE || AMAP_WEB_SERVICE_KEY) return;
+      throw new Error("请先在上方保存高德 Web 服务 Key。服务器部署版会自动使用服务端代理。");
     }
 
     function setupAmapKeyPanel() {
       const input = document.getElementById("amapKeyInput");
       const button = document.getElementById("saveAmapKey");
       if (!input || !button) return;
-      if (serverConfig.amapWebServiceKey) {
+      if (AMAP_PROXY_BASE || serverConfig.amapWebServiceKey) {
         input.value = "服务器已配置";
         input.disabled = true;
         button.disabled = true;
@@ -1331,6 +1332,12 @@
       });
     }
 
+    async function requestJson(url) {
+      const response = await fetch(url, { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    }
+
     function parseAmapPolyline(data) {
       const path = data && data.route && data.route.paths && data.route.paths[0];
       if (!path || !path.steps) return null;
@@ -1351,17 +1358,22 @@
     }
 
     async function getAmapRoute(mode, from, to) {
-      requireAmapKey();
-      const endpoint = mode === "driving"
-        ? "https://restapi.amap.com/v3/direction/driving"
-        : "https://restapi.amap.com/v3/direction/walking";
+      requireAmapAccess();
+      const endpointPath = mode === "driving" ? "/v3/direction/driving" : "/v3/direction/walking";
+      const endpoint = AMAP_PROXY_BASE
+        ? `${AMAP_PROXY_BASE}${endpointPath}`
+        : mode === "driving"
+          ? "https://restapi.amap.com/v3/direction/driving"
+          : "https://restapi.amap.com/v3/direction/walking";
       const params = new URLSearchParams({
-        key: AMAP_WEB_SERVICE_KEY,
         origin: `${from[1]},${from[0]}`,
         destination: `${to[1]},${to[0]}`,
         output: "json"
       });
-      const data = await requestJsonp(`${endpoint}?${params.toString()}`);
+      if (!AMAP_PROXY_BASE) params.set("key", AMAP_WEB_SERVICE_KEY);
+      const data = AMAP_PROXY_BASE
+        ? await requestJson(`${endpoint}?${params.toString()}`)
+        : await requestJsonp(`${endpoint}?${params.toString()}`);
       if (!data || data.status !== "1") {
         throw new Error(data && data.info ? data.info : "amap route failed");
       }
@@ -1521,7 +1533,7 @@
     }
 
     async function getAmapRouteChoices(mode, from, to) {
-      requireAmapKey();
+      requireAmapAccess();
       if (mode === "transit") {
         const city1 = inferAmapCity(from);
         const city2 = inferAmapCity(to);
@@ -1529,7 +1541,6 @@
           throw new Error("高德 Web 服务公交接口要求 city1/city2 为高德 citycode；本行程的海外城市没有可用的高德 Web 服务 citycode。高德 App 可查海外公交，但该能力没有通过这个 Web 服务接口开放。");
         }
         const params = new URLSearchParams({
-          key: AMAP_WEB_SERVICE_KEY,
           origin: `${from[1]},${from[0]}`,
           destination: `${to[1]},${to[0]}`,
           city1,
@@ -1540,18 +1551,24 @@
           show_fields: "cost,navi",
           output: "json"
         });
-        const data = await requestJsonp(`https://restapi.amap.com/v5/direction/transit/integrated?${params.toString()}`);
+        if (!AMAP_PROXY_BASE) params.set("key", AMAP_WEB_SERVICE_KEY);
+        const url = AMAP_PROXY_BASE
+          ? `${AMAP_PROXY_BASE}/v5/direction/transit/integrated?${params.toString()}`
+          : `https://restapi.amap.com/v5/direction/transit/integrated?${params.toString()}`;
+        const data = AMAP_PROXY_BASE ? await requestJson(url) : await requestJsonp(url);
         if (!data || String(data.status) !== "1") throw new Error(data && data.info ? data.info : "高德公交无结果");
         const choices = parseAmapTransitChoices(data);
         if (!choices.length) throw new Error("高德公交未返回可绘制路线");
         return choices;
       }
 
-      const endpoint = mode === "driving"
-        ? "https://restapi.amap.com/v5/direction/driving"
-        : "https://restapi.amap.com/v5/direction/walking";
+      const endpointPath = mode === "driving" ? "/v5/direction/driving" : "/v5/direction/walking";
+      const endpoint = AMAP_PROXY_BASE
+        ? `${AMAP_PROXY_BASE}${endpointPath}`
+        : mode === "driving"
+          ? "https://restapi.amap.com/v5/direction/driving"
+          : "https://restapi.amap.com/v5/direction/walking";
       const params = new URLSearchParams({
-        key: AMAP_WEB_SERVICE_KEY,
         origin: `${from[1]},${from[0]}`,
         destination: `${to[1]},${to[0]}`,
         alternative_route: "3",
@@ -1559,7 +1576,10 @@
         show_fields: "cost,navi",
         output: "json"
       });
-      const data = await requestJsonp(`${endpoint}?${params.toString()}`);
+      if (!AMAP_PROXY_BASE) params.set("key", AMAP_WEB_SERVICE_KEY);
+      const data = AMAP_PROXY_BASE
+        ? await requestJson(`${endpoint}?${params.toString()}`)
+        : await requestJsonp(`${endpoint}?${params.toString()}`);
       if (!data || String(data.status) !== "1") throw new Error(data && data.info ? data.info : "高德路线无结果");
       const choices = parseAmapPathChoices(data, mode);
       if (!choices.length) throw new Error("高德未返回可绘制路线");
