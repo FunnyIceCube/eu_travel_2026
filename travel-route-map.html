@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>6.18-6.26 布鲁塞尔-巴黎-意大利路线地图</title>
   <script>document.documentElement.classList.add("auth-pending");</script>
+  <script src="config.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
     .leaflet-pane,
@@ -1127,7 +1128,8 @@
     const allLayers = L.layerGroup().addTo(map);
     const routeLayer = L.layerGroup().addTo(map);
     const AMAP_KEY_STORAGE = "amap_web_service_key";
-    let AMAP_WEB_SERVICE_KEY = localStorage.getItem(AMAP_KEY_STORAGE) || "";
+    const serverConfig = window.EU_TRAVEL_CONFIG || {};
+    let AMAP_WEB_SERVICE_KEY = serverConfig.amapWebServiceKey || localStorage.getItem(AMAP_KEY_STORAGE) || "";
     let activeDayId = "d0618";
     let currentRouteChoices = [];
     const markerRefs = new Map();
@@ -1274,6 +1276,13 @@
       const input = document.getElementById("amapKeyInput");
       const button = document.getElementById("saveAmapKey");
       if (!input || !button) return;
+      if (serverConfig.amapWebServiceKey) {
+        input.value = "服务器已配置";
+        input.disabled = true;
+        button.disabled = true;
+        button.textContent = "已配置";
+        return;
+      }
       input.value = AMAP_WEB_SERVICE_KEY;
       button.addEventListener("click", () => {
         AMAP_WEB_SERVICE_KEY = input.value.trim();
