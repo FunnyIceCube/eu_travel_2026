@@ -1,0 +1,1645 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>6.18-6.26 布鲁塞尔-巴黎-意大利路线地图</title>
+  <script>document.documentElement.classList.add("auth-pending");</script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <style>
+    .leaflet-pane,
+    .leaflet-tile,
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow,
+    .leaflet-tile-container,
+    .leaflet-pane > svg,
+    .leaflet-pane > canvas,
+    .leaflet-zoom-box,
+    .leaflet-image-layer,
+    .leaflet-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .leaflet-container {
+      overflow: hidden;
+      touch-action: none;
+      background: #ddd;
+      outline-offset: 1px;
+    }
+
+    .leaflet-tile,
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow {
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .leaflet-tile {
+      max-width: none !important;
+      max-height: none !important;
+    }
+
+    .leaflet-safari .leaflet-tile {
+      image-rendering: -webkit-optimize-contrast;
+    }
+
+    .leaflet-control {
+      position: relative;
+      z-index: 800;
+      pointer-events: auto;
+    }
+
+    .leaflet-top,
+    .leaflet-bottom {
+      position: absolute;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .leaflet-top { top: 0; }
+    .leaflet-right { right: 0; }
+    .leaflet-bottom { bottom: 0; }
+    .leaflet-left { left: 0; }
+
+    .leaflet-control-zoom {
+      border: 2px solid rgba(0,0,0,0.2);
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .leaflet-control-zoom a {
+      display: block;
+      width: 30px;
+      height: 30px;
+      color: #111827;
+      background: #fff;
+      text-align: center;
+      text-decoration: none;
+      line-height: 30px;
+      font: 700 18px/30px ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .leaflet-popup {
+      position: absolute;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .leaflet-popup-content-wrapper {
+      padding: 1px;
+      text-align: left;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    }
+
+    .leaflet-popup-content {
+      line-height: 1.3;
+    }
+
+    .leaflet-popup-tip-container {
+      position: absolute;
+      left: 50%;
+      margin-left: -20px;
+      width: 40px;
+      height: 20px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .leaflet-popup-tip {
+      width: 17px;
+      height: 17px;
+      padding: 1px;
+      margin: -10px auto 0;
+      transform: rotate(45deg);
+      background: #fff;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+    }
+
+    .leaflet-interactive {
+      cursor: pointer;
+    }
+
+    :root {
+      --bg: #f7f4ee;
+      --panel: #fffdf8;
+      --text: #1f2933;
+      --muted: #5e6b78;
+      --line: #ded6c8;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --accent-3: #2563eb;
+      --shadow: 0 18px 40px rgba(31, 41, 51, 0.14);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      background: var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(360px, 430px) 1fr;
+      width: 100vw;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+    }
+
+    aside {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+      border-right: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    header {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 750;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: #faf7f0;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid #cfc6b6;
+      border-radius: 8px;
+      color: var(--text);
+      background: #fff;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button.active {
+      border-color: var(--accent);
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .day-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+    }
+
+    .day-card {
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .day-head {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-radius: 0;
+      text-align: left;
+      background: #fff;
+    }
+
+    .day-head:hover,
+    .day-head.active {
+      color: var(--text);
+      background: #eef7f6;
+    }
+
+    .date {
+      flex: 0 0 auto;
+      min-width: 54px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .day-title {
+      display: block;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.3;
+    }
+
+    .day-meta {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .day-duration {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #0f766e;
+      background: #e7f4f2;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .details {
+      display: none;
+      padding: 0 12px 12px 76px;
+    }
+
+    .day-card.open .details { display: block; }
+
+    .timeline {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .duration-note {
+      margin: 8px 0 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: #374151;
+      background: #eef7f6;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .timeline li {
+      position: relative;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .timeline b {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .timeline-stop {
+      padding-left: 0;
+    }
+
+    .timeline-leg {
+      margin-left: 10px !important;
+      padding: 6px 8px 6px 18px;
+      border-left: 2px solid rgba(15, 118, 110, 0.32);
+      background: #faf7f0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 8px;
+      border: 1px solid #cfc6b6;
+      border-radius: 8px;
+      color: #1f2933;
+      background: #fff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav-link:hover {
+      border-color: var(--accent);
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .route-status {
+      margin: 0 12px;
+      padding: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .route-status strong {
+      color: var(--accent);
+    }
+
+    .route-key-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 0 12px 10px;
+    }
+
+    .route-key-panel input {
+      min-width: 0;
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      font-size: 12px;
+      background: #fff;
+    }
+
+    .route-key-panel button {
+      min-height: 34px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
+    .route-choice-list {
+      display: grid;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .route-choice {
+      width: 100%;
+      min-height: 34px;
+      padding: 7px 9px;
+      text-align: left;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid #cfc6b6;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .route-choice:hover,
+    .route-choice.active {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .mode {
+      display: inline-block;
+      min-width: 34px;
+      margin-right: 4px;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .number {
+      display: inline-grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      margin-right: 6px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent-2);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .map-wrap {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #e6e0d6;
+    }
+
+    .legend {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      z-index: 500;
+      width: min(360px, calc(100vw - 32px));
+      padding: 12px;
+      border: 1px solid rgba(222, 214, 200, 0.95);
+      border-radius: 8px;
+      background: rgba(255, 253, 248, 0.94);
+      box-shadow: 0 12px 26px rgba(31, 41, 51, 0.14);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .legend strong { display: block; margin-bottom: 4px; }
+
+    .pin {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent-2);
+      box-shadow: 0 6px 16px rgba(31, 41, 51, 0.24);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pin.long { background: var(--accent-3); }
+    .pin.active { background: var(--accent); transform: scale(1.08); }
+
+    .leaflet-popup-content {
+      min-width: 210px;
+      margin: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .popup-title {
+      margin-bottom: 4px;
+      font-weight: 800;
+    }
+
+    .popup-meta { color: var(--muted); }
+
+    @media (max-width: 860px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 46svh 54svh;
+        height: 100svh;
+      }
+
+      aside {
+        grid-row: 2;
+        height: 54svh;
+        min-height: 0;
+        border-right: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .map-wrap {
+        grid-row: 1;
+        height: 46svh;
+      }
+
+      .details { padding-left: 12px; }
+      .legend { display: none; }
+    }
+
+    html.auth-pending body {
+      overflow: hidden;
+    }
+
+    html.auth-pending body > :not(.auth-gate) {
+      display: none !important;
+    }
+
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        linear-gradient(135deg, rgba(15,118,110,0.9), rgba(180,83,9,0.78)),
+        #0f766e;
+    }
+
+    .auth-card {
+      width: min(420px, 100%);
+      padding: 24px;
+      border-radius: 10px;
+      background: #fffdf8;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
+    }
+
+    .auth-card h2 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .auth-card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .auth-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .auth-row input {
+      min-width: 0;
+      min-height: 42px;
+      padding: 0 12px;
+      border: 1px solid #cfc6b6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .auth-error {
+      min-height: 20px;
+      margin-top: 10px;
+      color: #b91c1c;
+      font-size: 13px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-gate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <form class="auth-card" id="authForm">
+      <h2 id="authTitle">请输入访问密码</h2>
+      <p>这份欧洲行程攻略已设置本地访问密码。</p>
+      <div class="auth-row">
+        <input id="authPassword" type="password" autocomplete="current-password" placeholder="访问密码" autofocus />
+        <button type="submit">进入</button>
+      </div>
+      <div class="auth-error" id="authError" aria-live="polite"></div>
+    </form>
+  </div>
+  <script>
+    (() => {
+      const authHash = "a79b11521bbb6ceccb694aa47bf84d9c0e1a4ca945c4ed48abb5f1a0b9d030e5";
+      const storageKey = "eu_travel_2026_auth";
+      const gate = document.querySelector(".auth-gate");
+      const form = document.querySelector("#authForm");
+      const input = document.querySelector("#authPassword");
+      const error = document.querySelector("#authError");
+
+      const sha256 = async (text) => {
+        const bytes = new TextEncoder().encode(text);
+        const digest = await crypto.subtle.digest("SHA-256", bytes);
+        return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+      };
+
+      const unlock = () => {
+        document.documentElement.classList.remove("auth-pending");
+        gate.remove();
+      };
+
+      if (localStorage.getItem(storageKey) === authHash) {
+        unlock();
+        return;
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const currentHash = await sha256(input.value);
+        if (currentHash === authHash) {
+          localStorage.setItem(storageKey, authHash);
+          unlock();
+          return;
+        }
+        error.textContent = "密码不正确";
+        input.select();
+      });
+    })();
+  </script>
+  <main class="app">
+    <aside>
+      <header>
+        <h1>布鲁塞尔、巴黎、佛罗伦萨、威尼斯、米兰</h1>
+        <p class="subtitle">2026.6.18-6.26 按天串联路线。默认只显示当天路线；点击日期切换，点击地图点位查看顺序、交通方式和大致耗时。</p>
+      </header>
+      <div class="controls">
+        <button id="showAll" class="active" type="button">显示全程</button>
+        <button id="fitAll" type="button">缩放到全图</button>
+        <button id="openGuides" type="button">景点攻略</button>
+      </div>
+      <div id="routeStatus" class="route-status">点击每段交通下方的路线按钮，会直接在右侧地图中绘制路线。</div>
+      <div class="route-key-panel" aria-label="高德路线服务 Key">
+        <input id="amapKeyInput" type="password" autocomplete="off" placeholder="高德 Web 服务 Key，本地保存，不上传" />
+        <button id="saveAmapKey" type="button">保存 Key</button>
+      </div>
+      <section id="dayList" class="day-list" aria-label="每日路线"></section>
+    </aside>
+    <section class="map-wrap" aria-label="路线地图">
+      <div id="map"></div>
+      <div class="legend">
+        <strong>读图方式</strong>
+        橙色编号是当天游玩顺序，蓝色编号是跨城市交通节点。实线表示市内游玩顺序，虚线表示火车/飞机/跨城移动；具体公交、地铁、步行耗时看左侧路线段。
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const oldDays = [
+      {
+        id: "d0618",
+        date: "6/18",
+        title: "布鲁塞尔落地，半日游后去巴黎",
+        meta: "机场火车 + 南站寄存 + 市中心步行 + Eurostar",
+        total: "约 7.5-9.5 小时",
+        color: "#b45309",
+        stops: [
+          ["布鲁塞尔机场 BRU", 50.900999, 4.485574, "入境、取行李、整理出发：约 45-75 分钟", true],
+          ["布鲁塞尔南站 Bruxelles-Midi", 50.835707, 4.336531, "寄存行李/确认站台：约 25-40 分钟", true],
+          ["大广场 Grand Place", 50.846733, 4.352413, "游览拍照：约 30-45 分钟"],
+          ["撒尿小童 Manneken Pis", 50.844996, 4.349985, "拍照打卡：约 10-15 分钟"],
+          ["圣于贝尔皇家拱廊 Galeries Royales Saint-Hubert", 50.848194, 4.354813, "逛街/买巧克力：约 25-40 分钟"],
+          ["艺术山 Mont des Arts", 50.843889, 4.356111, "观景拍照：约 20-30 分钟"],
+          ["布鲁塞尔南站 Bruxelles-Midi", 50.835707, 4.336531, "取行李/候车：建议预留约 25-40 分钟", true],
+          ["巴黎北站 Paris Gare du Nord", 48.880948, 2.355314, "到站出站/去酒店：约 20-40 分钟", true]
+        ],
+        legs: [
+          "机场火车约 20-25 分钟",
+          "地铁/火车约 10-15 分钟，或步行约 20-25 分钟",
+          "步行约 6 分钟",
+          "步行约 8 分钟",
+          "步行约 10 分钟",
+          "地铁/火车约 10-15 分钟，或步行约 20-25 分钟",
+          "Eurostar 约 1小时22分"
+        ]
+      },
+      {
+        id: "d0619",
+        date: "6/19",
+        title: "巴黎：卢浮宫、塞纳河、铁塔、凯旋门",
+        meta: "地铁/RER + 步行",
+        total: "约 8-10.5 小时",
+        color: "#0f766e",
+        stops: [
+          ["卢浮宫 Louvre Museum", 48.860611, 2.337644, "游览：约 3 小时，建议预约"],
+          ["杜乐丽花园 Tuileries Garden", 48.863491, 2.327494, "散步拍照：约 25-40 分钟"],
+          ["奥赛博物馆 Musée d'Orsay", 48.859961, 2.326561, "游览：约 2-2.5 小时"],
+          ["亚历山大三世桥 Pont Alexandre III", 48.863899, 2.313553, "桥区拍照/休息：约 15-25 分钟"],
+          ["埃菲尔铁塔 Eiffel Tower", 48.858370, 2.294481, "外观拍照约 30-45 分钟；登塔另加 1.5-2 小时"],
+          ["凯旋门 Arc de Triomphe", 48.873792, 2.295028, "外观/登顶：约 40-70 分钟"]
+        ],
+        legs: [
+          "步行约 10 分钟",
+          "步行约 15-20 分钟",
+          "沿塞纳河步行约 20-25 分钟",
+          "地铁/RER 约 20-30 分钟",
+          "地铁约 20 分钟"
+        ]
+      },
+      {
+        id: "d0620",
+        date: "6/20",
+        title: "凡尔赛 + 蒙马特",
+        meta: "RER C + 地铁 + 步行",
+        total: "约 8.5-10.5 小时",
+        color: "#7c3aed",
+        stops: [
+          ["圣米歇尔-巴黎圣母院站 Paris Saint-Michel Notre-Dame", 48.853420, 2.344256, "集合/进站：约 10-15 分钟"],
+          ["凡尔赛左岸站 Versailles Château Rive Gauche", 48.800560, 2.129150, "出站/买水上厕所：约 10-15 分钟"],
+          ["凡尔赛宫 Palace of Versailles", 48.804865, 2.120355, "宫殿+花园：约 4-5 小时"],
+          ["阿贝斯地铁站 Abbesses Metro", 48.884483, 2.338903, "蒙马特起点，出站整理：约 5-10 分钟"],
+          ["圣心大教堂 Sacré-Cœur", 48.886704, 2.343104, "参观/看景：约 30-45 分钟"],
+          ["小丘广场 Place du Tertre", 48.886471, 2.340814, "散步/晚餐前逛逛：约 30-60 分钟"]
+        ],
+        legs: [
+          "RER C 约 45-60 分钟",
+          "步行约 10 分钟",
+          "RER/地铁换乘约 60-75 分钟",
+          "步行上坡约 10-15 分钟",
+          "步行约 5 分钟"
+        ]
+      },
+      {
+        id: "d0621",
+        date: "6/21",
+        title: "巴黎补景点，飞佛罗伦萨",
+        meta: "市内步行 + 机场交通 + 航班",
+        total: "约 8.5-11 小时",
+        color: "#2563eb",
+        stops: [
+          ["巴黎圣母院 Notre-Dame de Paris", 48.852968, 2.349902, "外观+西岱岛散步：约 45-60 分钟"],
+          ["莎士比亚书店 Shakespeare and Company", 48.852568, 2.347096, "书店浏览：约 20-35 分钟"],
+          ["玛黑区 Le Marais", 48.856600, 2.361200, "午餐/街区散步：约 1.5-2.5 小时"],
+          ["巴黎戴高乐机场 Paris CDG Airport", 49.009690, 2.547925, "值机安检：建议预留约 2 小时", true],
+          ["佛罗伦萨机场 Florence Airport FLR", 43.809953, 11.205100, "落地取行李：约 30-45 分钟", true],
+          ["佛罗伦萨新圣母玛利亚站 Firenze SMN", 43.776665, 11.248017, "到站后去酒店/晚餐：约 30-60 分钟", true]
+        ],
+        legs: [
+          "步行约 5 分钟",
+          "步行或地铁约 15-25 分钟",
+          "机场交通约 45-60 分钟，提前 2 小时到机场",
+          "直飞约 1小时50分",
+          "T2 电车约 20 分钟"
+        ]
+      },
+      {
+        id: "d0622",
+        date: "6/22",
+        title: "佛罗伦萨步行日",
+        meta: "老城步行 + 米开朗琪罗广场公交/打车可选",
+        total: "约 7-9.5 小时",
+        color: "#db2777",
+        stops: [
+          ["佛罗伦萨新圣母玛利亚站 Firenze SMN", 43.776665, 11.248017, "出发/取行李：约 10-20 分钟", true],
+          ["圣母百花大教堂 Duomo Firenze", 43.773145, 11.255961, "外观+教堂区：约 1.5-2.5 小时；登顶另加约 1 小时"],
+          ["中央市场 Mercato Centrale", 43.776509, 11.253078, "午餐/逛市场：约 1-1.5 小时"],
+          ["领主广场 Piazza della Signoria", 43.769560, 11.255814, "广场雕塑和市政厅外观：约 30-45 分钟"],
+          ["老桥 Ponte Vecchio", 43.767926, 11.253143, "桥上散步拍照：约 20-30 分钟"],
+          ["米开朗琪罗广场 Piazzale Michelangelo", 43.762947, 11.265031, "看日落/城市全景：约 45-75 分钟"]
+        ],
+        legs: [
+          "步行约 10-15 分钟",
+          "步行约 8-10 分钟",
+          "步行约 10-12 分钟",
+          "步行约 6-8 分钟",
+          "步行上坡约 25-35 分钟，公交/打车约 15-20 分钟"
+        ]
+      },
+      {
+        id: "d0623",
+        date: "6/23",
+        title: "佛罗伦萨美术馆，下午去威尼斯",
+        meta: "步行 + 高铁",
+        total: "约 7.5-9 小时",
+        color: "#ea580c",
+        stops: [
+          ["学院美术馆 Galleria dell'Accademia", 43.776768, 11.258748, "参观：约 1-1.5 小时，建议 8:15 第一批"],
+          ["乌菲兹美术馆 Uffizi Gallery", 43.767785, 11.255310, "参观：约 2.5-3 小时"],
+          ["佛罗伦萨新圣母玛利亚站 Firenze SMN", 43.776665, 11.248017, "取行李/候车：建议预留约 25-40 分钟", true],
+          ["威尼斯圣露西亚站 Venezia Santa Lucia", 45.441007, 12.321003, "出站/买水上巴士票：约 15-25 分钟", true],
+          ["里亚托桥 Rialto Bridge", 45.438042, 12.335897, "桥区散步拍照：约 25-40 分钟"],
+          ["圣马可广场 Piazza San Marco", 45.434166, 12.338471, "夜景散步：约 30-60 分钟"]
+        ],
+        legs: [
+          "步行约 15 分钟",
+          "步行约 15-20 分钟",
+          "高铁约 2小时05分-2小时15分",
+          "水上巴士约 15-20 分钟或步行约 25 分钟",
+          "步行约 10-15 分钟"
+        ]
+      },
+      {
+        id: "d0624",
+        date: "6/24",
+        title: "威尼斯主岛完整一天",
+        meta: "步行 + 水上巴士",
+        total: "约 7-9.5 小时",
+        color: "#0891b2",
+        stops: [
+          ["圣马可广场 Piazza San Marco", 45.434166, 12.338471, "广场拍照/看外观：约 30-45 分钟"],
+          ["圣马可大教堂 Basilica di San Marco", 45.434560, 12.339712, "参观：约 45-75 分钟，建议预约"],
+          ["总督宫 Doge's Palace", 45.433704, 12.340389, "参观：约 1.5-2 小时"],
+          ["叹息桥 Bridge of Sighs", 45.434047, 12.341155, "拍照打卡：约 10-15 分钟"],
+          ["里亚托桥 Rialto Bridge", 45.438042, 12.335897, "桥区散步拍照：约 25-40 分钟"],
+          ["新码头 Fondamente Nove", 45.442450, 12.340070, "候船/休整：约 10-20 分钟"],
+          ["穆拉诺岛 Murano", 45.458619, 12.353191, "玻璃岛散步/看店：约 1.5-2.5 小时"]
+        ],
+        legs: [
+          "步行 2-3 分钟",
+          "步行 2-3 分钟",
+          "步行几分钟",
+          "步行约 10-15 分钟",
+          "步行约 15-20 分钟",
+          "水上巴士约 10-20 分钟"
+        ]
+      },
+      {
+        id: "d0625",
+        date: "6/25",
+        title: "威尼斯上午，下午到米兰",
+        meta: "水上巴士/步行 + 高铁 + 地铁",
+        total: "约 8-10.5 小时",
+        color: "#16a34a",
+        stops: [
+          ["卡纳雷吉欧区 Cannaregio", 45.445430, 12.326320, "上午散步/咖啡：约 1-1.5 小时"],
+          ["威尼斯圣露西亚站 Venezia Santa Lucia", 45.441007, 12.321003, "取行李/候车：建议预留约 25-40 分钟", true],
+          ["米兰中央站 Milano Centrale", 45.486280, 9.204731, "到站/去酒店放行李：约 30-60 分钟", true],
+          ["米兰大教堂 Duomo di Milano", 45.464191, 9.191530, "教堂+屋顶：约 1.5-2 小时，建议预约"],
+          ["埃马努埃莱二世长廊 Galleria Vittorio Emanuele II", 45.465607, 9.190025, "长廊拍照/逛店：约 20-40 分钟"],
+          ["斯福尔扎城堡 Sforzesco Castle", 45.470476, 9.179724, "城堡外观/庭院：约 40-60 分钟"],
+          ["布雷拉 Brera", 45.471871, 9.187649, "晚餐+街区散步：约 1.5-2.5 小时"]
+        ],
+        legs: [
+          "步行或水上巴士约 15-40 分钟",
+          "高铁约 2小时25分-2小时35分",
+          "M3 地铁约 10 分钟",
+          "步行 2 分钟",
+          "地铁/步行约 15-25 分钟",
+          "步行约 10-15 分钟"
+        ]
+      },
+      {
+        id: "d0626",
+        date: "6/26",
+        title: "米兰半日，20:00 返程",
+        meta: "地铁 + 机场快线",
+        total: "约 7.5-9 小时",
+        color: "#dc2626",
+        stops: [
+          ["米兰大教堂 Duomo di Milano", 45.464191, 9.191530, "补教堂屋顶/购物：约 1-2 小时"],
+          ["恩宠圣母教堂 Santa Maria delle Grazie", 45.465991, 9.170565, "《最后的晚餐》参观：约 30-45 分钟，必须预约"],
+          ["纳维利运河区 Navigli", 45.450070, 9.173804, "午餐/运河区散步：约 1.5-2 小时"],
+          ["米兰中央站 Milano Centrale", 45.486280, 9.204731, "取行李/候车：建议 16:00 左右到达", true],
+          ["米兰马尔彭萨机场 Milan Malpensa Airport", 45.630063, 8.725531, "值机安检：建议 17:00 前后到机场", true]
+        ],
+        legs: [
+          "地铁+步行约 20-30 分钟",
+          "地铁/电车约 20-30 分钟",
+          "地铁约 20-30 分钟",
+          "Malpensa Express 约 53-57 分钟，20:00 航班建议 17:00 前后到机场"
+        ]
+      }
+    ];
+
+    const days = [
+      {
+        id: "d0618",
+        date: "6/18",
+        title: "布鲁塞尔落地，半日游后去巴黎",
+        meta: "机场火车 + 南站寄存 + 市中心步行 + Eurostar",
+        total: "约 7.5-9.5 小时",
+        color: "#b45309",
+        stops: [
+          ["布鲁塞尔机场 BRU", 50.900999, 4.485574, "入境、取行李、整理出发：约 45-75 分钟", true],
+          ["布鲁塞尔南站 Bruxelles-Midi", 50.835707, 4.336531, "寄存行李/确认站台：约 25-40 分钟", true],
+          ["大广场 Grand Place", 50.846733, 4.352413, "游览拍照：约 30-45 分钟"],
+          ["撒尿小童 Manneken Pis", 50.844996, 4.349985, "拍照打卡：约 10-15 分钟"],
+          ["圣于贝尔皇家拱廊 Galeries Royales Saint-Hubert", 50.848194, 4.354813, "逛街/买巧克力：约 25-40 分钟"],
+          ["艺术山 Mont des Arts", 50.843889, 4.356111, "观景拍照：约 20-30 分钟"],
+          ["布鲁塞尔南站 Bruxelles-Midi", 50.835707, 4.336531, "取行李/候车：建议预留约 25-40 分钟", true],
+          ["巴黎北站 Paris Gare du Nord", 48.880948, 2.355314, "到站出站/去酒店：约 20-40 分钟", true]
+        ],
+        legs: [
+          "机场火车约 20-25 分钟",
+          "地铁/火车约 10-15 分钟，或步行约 20-25 分钟",
+          "步行约 6 分钟",
+          "步行约 8 分钟",
+          "步行约 10 分钟",
+          "地铁/火车约 10-15 分钟，或步行约 20-25 分钟",
+          "Eurostar 约 1小时22分"
+        ]
+      },
+      {
+        id: "d0619",
+        date: "6/19",
+        title: "巴黎压缩一日精华",
+        meta: "地铁/RER + 步行",
+        total: "约 8-10 小时",
+        color: "#0f766e",
+        stops: [
+          ["卢浮宫 Louvre Museum", 48.860611, 2.337644, "游览：约 2.5-3 小时，建议预约早场"],
+          ["杜乐丽花园 Tuileries Garden", 48.863491, 2.327494, "散步拍照：约 20-30 分钟"],
+          ["巴黎圣母院 Notre-Dame de Paris", 48.852968, 2.349902, "外观+西岱岛散步：约 45-60 分钟"],
+          ["埃菲尔铁塔 Eiffel Tower", 48.858370, 2.294481, "外观拍照约 30-45 分钟；登塔另加 1.5-2 小时"],
+          ["凯旋门 Arc de Triomphe", 48.873792, 2.295028, "外观/登顶：约 40-70 分钟"],
+          ["蒙马特圣心大教堂 Sacré-Cœur", 48.886704, 2.343104, "傍晚看景：约 30-45 分钟"]
+        ],
+        legs: [
+          "步行约 10 分钟",
+          "地铁/步行约 20-30 分钟",
+          "地铁/RER 约 25-35 分钟",
+          "地铁约 20 分钟",
+          "地铁约 20-30 分钟"
+        ]
+      },
+      {
+        id: "d0620",
+        date: "6/20",
+        title: "巴黎半日，下午飞罗马",
+        meta: "巴黎市内 + 机场交通 + 航班",
+        total: "约 8.5-10.5 小时",
+        color: "#2563eb",
+        stops: [
+          ["玛黑区 Le Marais", 48.856600, 2.361200, "早餐/街区散步：约 1-1.5 小时"],
+          ["奥赛博物馆 Musée d'Orsay", 48.859961, 2.326561, "可选快逛：约 1.5-2 小时；不进馆可改塞纳河散步"],
+          ["巴黎戴高乐机场 Paris CDG Airport", 49.009690, 2.547925, "值机安检：建议预留约 2 小时", true],
+          ["罗马菲乌米奇诺机场 Rome FCO", 41.800277, 12.238889, "落地取行李：约 30-45 分钟", true],
+          ["罗马特米尼站 Roma Termini", 41.901000, 12.501000, "进城/酒店办理入住：约 30-60 分钟", true],
+          ["特雷维喷泉 Trevi Fountain", 41.900932, 12.483313, "夜景散步拍照：约 20-35 分钟"]
+        ],
+        legs: [
+          "地铁/步行约 20-30 分钟",
+          "机场交通约 45-60 分钟，提前 2 小时到机场",
+          "直飞约 2小时",
+          "Leonardo Express 约 32 分钟，或打车约 40-60 分钟",
+          "地铁/步行约 15-25 分钟"
+        ]
+      },
+      {
+        id: "d0621",
+        date: "6/21",
+        title: "罗马古城精华",
+        meta: "步行 + 地铁",
+        total: "约 8-10 小时",
+        color: "#7c3aed",
+        stops: [
+          ["罗马斗兽场 Colosseum", 41.890210, 12.492231, "参观：约 1.5-2 小时，建议预约"],
+          ["古罗马广场 Roman Forum", 41.892462, 12.485325, "参观：约 1.5-2 小时"],
+          ["威尼斯广场 Piazza Venezia", 41.895610, 12.482270, "外观拍照：约 20-30 分钟"],
+          ["万神殿 Pantheon", 41.898610, 12.476873, "参观：约 30-45 分钟"],
+          ["纳沃纳广场 Piazza Navona", 41.899163, 12.473074, "散步/咖啡：约 30-45 分钟"],
+          ["西班牙台阶 Spanish Steps", 41.905990, 12.482780, "傍晚散步：约 30-45 分钟"]
+        ],
+        legs: [
+          "步行约 5-10 分钟",
+          "步行约 15-20 分钟",
+          "步行约 10-15 分钟",
+          "步行约 5 分钟",
+          "步行约 15-20 分钟"
+        ]
+      },
+      {
+        id: "d0622",
+        date: "6/22",
+        title: "梵蒂冈，傍晚到比萨",
+        meta: "地铁/步行 + 高铁",
+        total: "约 8.5-11 小时",
+        color: "#db2777",
+        stops: [
+          ["梵蒂冈博物馆 Vatican Museums", 41.906487, 12.453641, "参观：约 2.5-3 小时，必须预约"],
+          ["圣彼得大教堂 St. Peter's Basilica", 41.902167, 12.453937, "参观：约 1-1.5 小时"],
+          ["圣彼得广场 St. Peter's Square", 41.902229, 12.457359, "拍照/休整：约 20-30 分钟"],
+          ["罗马特米尼站 Roma Termini", 41.901000, 12.501000, "取行李/候车：建议预留约 30-45 分钟", true],
+          ["比萨中央站 Pisa Centrale", 43.708530, 10.398600, "到站后去酒店/晚餐：约 30-60 分钟", true],
+          ["阿诺河岸 Lungarno di Pisa", 43.716950, 10.401070, "晚间散步：约 20-40 分钟"]
+        ],
+        legs: [
+          "步行约 15-20 分钟，安检排队另计",
+          "步行约 5 分钟",
+          "地铁/打车约 25-40 分钟",
+          "火车约 2小时15分-3小时，按车次可能需换乘",
+          "步行约 15-25 分钟，或打车约 8-12 分钟"
+        ]
+      },
+      {
+        id: "d0623",
+        date: "6/23",
+        title: "比萨半日，下午到威尼斯",
+        meta: "步行 + 火车/高铁 + 水上巴士",
+        total: "约 7.5-9.5 小时",
+        color: "#ea580c",
+        stops: [
+          ["比萨中央站 Pisa Centrale", 43.708530, 10.398600, "出发/寄存行李：约 15-30 分钟", true],
+          ["奇迹广场 Piazza dei Miracoli", 43.723040, 10.395850, "广场游览拍照：约 45-60 分钟"],
+          ["比萨斜塔 Leaning Tower of Pisa", 43.722953, 10.396597, "登塔/拍照：约 45-75 分钟，建议预约"],
+          ["比萨中央站 Pisa Centrale", 43.708530, 10.398600, "取行李/候车：建议预留约 25-40 分钟", true],
+          ["威尼斯圣露西亚站 Venezia Santa Lucia", 45.441007, 12.321003, "出站/买水上巴士票：约 15-25 分钟", true],
+          ["圣马可广场 Piazza San Marco", 45.434166, 12.338471, "夜景散步：约 30-60 分钟"]
+        ],
+        legs: [
+          "步行约 25-30 分钟，公交约 15-20 分钟，打车约 8-12 分钟",
+          "步行 2-3 分钟",
+          "步行约 25-30 分钟，公交约 15-20 分钟，打车约 8-12 分钟",
+          "火车约 3小时30分-4小时15分，通常经佛罗伦萨/博洛尼亚换乘",
+          "水上巴士约 35-45 分钟，或步行约 40-50 分钟"
+        ]
+      },
+      {
+        id: "d0624",
+        date: "6/24",
+        title: "威尼斯主岛完整一天",
+        meta: "步行 + 水上巴士",
+        total: "约 7-9.5 小时",
+        color: "#0891b2",
+        stops: [
+          ["圣马可广场 Piazza San Marco", 45.434166, 12.338471, "广场拍照/看外观：约 30-45 分钟"],
+          ["圣马可大教堂 Basilica di San Marco", 45.434560, 12.339712, "参观：约 45-75 分钟，建议预约"],
+          ["总督宫 Doge's Palace", 45.433704, 12.340389, "参观：约 1.5-2 小时"],
+          ["叹息桥 Bridge of Sighs", 45.434047, 12.341155, "拍照打卡：约 10-15 分钟"],
+          ["里亚托桥 Rialto Bridge", 45.438042, 12.335897, "桥区散步拍照：约 25-40 分钟"],
+          ["卡纳雷吉欧区 Cannaregio", 45.445430, 12.326320, "傍晚散步/咖啡：约 45-75 分钟"]
+        ],
+        legs: [
+          "步行 2-3 分钟",
+          "步行 2-3 分钟",
+          "步行几分钟",
+          "步行约 10-15 分钟",
+          "步行/水上巴士约 25-40 分钟"
+        ]
+      },
+      {
+        id: "d0625",
+        date: "6/25",
+        title: "威尼斯上午，下午到米兰",
+        meta: "步行 + 水上巴士 + 高铁",
+        total: "约 7.5-9.5 小时",
+        color: "#16a34a",
+        stops: [
+          ["新码头 Fondamente Nove", 45.442450, 12.340070, "去玻璃岛的上船点，候船/休整：约 10-20 分钟"],
+          ["穆拉诺岛 Murano", 45.458619, 12.353191, "玻璃岛小行程：看玻璃工坊、逛玻璃店和小运河，约 1.5-2.5 小时"],
+          ["里亚托桥 Rialto Bridge", 45.438042, 12.335897, "返回主岛后简单午餐/拍照：约 30-45 分钟"],
+          ["威尼斯圣露西亚站 Venezia Santa Lucia", 45.441007, 12.321003, "取行李/候车：建议预留约 25-40 分钟", true],
+          ["米兰中央站 Milano Centrale", 45.486280, 9.204731, "到站/去酒店放行李：约 30-60 分钟", true]
+        ],
+        legs: [
+          "水上巴士约 10-20 分钟",
+          "水上巴士/步行约 25-40 分钟",
+          "水上巴士约 15-20 分钟，或步行约 25 分钟",
+          "高铁约 2小时25分-2小时35分"
+        ]
+      },
+      {
+        id: "d0626",
+        date: "6/26",
+        title: "米兰半日，20:00 返程",
+        meta: "地铁 + 机场快线",
+        total: "约 7.5-9 小时",
+        color: "#dc2626",
+        stops: [
+          ["米兰大教堂 Duomo di Milano", 45.464191, 9.191530, "教堂+屋顶/购物：约 1.5-2.5 小时，建议预约"],
+          ["埃马努埃莱二世长廊 Galleria Vittorio Emanuele II", 45.465607, 9.190025, "长廊拍照/逛店：约 20-40 分钟"],
+          ["恩宠圣母教堂 Santa Maria delle Grazie", 45.465991, 9.170565, "《最后的晚餐》参观：约 30-45 分钟，必须预约"],
+          ["米兰中央站 Milano Centrale", 45.486280, 9.204731, "取行李/候车：建议 16:00 左右到达", true],
+          ["米兰马尔彭萨机场 Milan Malpensa Airport", 45.630063, 8.725531, "值机安检：建议 17:00 前后到机场", true]
+        ],
+        legs: [
+          "步行 2 分钟",
+          "地铁+步行约 20-30 分钟",
+          "地铁约 20-30 分钟",
+          "Malpensa Express 约 53-57 分钟，20:00 航班建议 17:00 前后到机场"
+        ]
+      }
+    ];
+
+    document.querySelector("h1").textContent = "布鲁塞尔、巴黎、罗马、梵蒂冈、比萨、威尼斯、米兰";
+    document.querySelector(".subtitle").textContent = "2026.6.18-6.26 按天串联路线。巴黎压缩为一日半，新增罗马、梵蒂冈和比萨，不再安排佛罗伦萨；点击日期切换，点击地图点位查看顺序、交通方式和大致耗时。";
+
+    const map = L.map("map", {
+      zoomControl: true,
+      preferCanvas: true,
+      maxBounds: [[35, -10], [56, 16]],
+      maxBoundsViscosity: 0.75,
+      minZoom: 4
+    }).setView([50.4, 3.6], 8);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      noWrap: true,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const allLayers = L.layerGroup().addTo(map);
+    const routeLayer = L.layerGroup().addTo(map);
+    const AMAP_KEY_STORAGE = "amap_web_service_key";
+    let AMAP_WEB_SERVICE_KEY = localStorage.getItem(AMAP_KEY_STORAGE) || "";
+    let activeDayId = "d0618";
+    let currentRouteChoices = [];
+    const markerRefs = new Map();
+
+    function makeIcon(number, isLong, isActive) {
+      return L.divIcon({
+        className: "",
+        html: `<span class="pin ${isLong ? "long" : ""} ${isActive ? "active" : ""}">${number}</span>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -16]
+      });
+    }
+
+    function renderMap(dayId) {
+      allLayers.clearLayers();
+      if (typeof routeLayer !== "undefined") routeLayer.clearLayers();
+      markerRefs.clear();
+      const selectedDays = dayId ? days.filter(day => day.id === dayId) : days;
+      const bounds = [];
+
+      selectedDays.forEach(day => {
+        const latlngs = day.stops.map(stop => [stop[1], stop[2]]);
+
+        day.stops.forEach((stop, index) => {
+          const [name, lat, lng, note, isLong] = stop;
+          const marker = L.marker([lat, lng], {
+            icon: makeIcon(index + 1, Boolean(isLong), Boolean(dayId))
+          }).bindPopup(`
+            <div class="popup-title">${day.date} · ${index + 1}. ${name}</div>
+            <div class="popup-meta">${note}</div>
+          `);
+
+          marker.addTo(allLayers);
+          markerRefs.set(`${day.id}-${index}`, marker);
+          bounds.push([lat, lng]);
+        });
+
+        for (let i = 0; i < latlngs.length - 1; i++) {
+          const fromLong = Boolean(day.stops[i][4]);
+          const toLong = Boolean(day.stops[i + 1][4]);
+          if (fromLong || toLong) {
+            L.polyline([latlngs[i], latlngs[i + 1]], {
+              color: day.color,
+              weight: dayId ? 4 : 2,
+              opacity: dayId ? 0.72 : 0.38,
+              dashArray: "8 10"
+            }).addTo(allLayers);
+          } else {
+            L.polyline([latlngs[i], latlngs[i + 1]], {
+              color: day.color,
+              weight: dayId ? 5 : 3,
+              opacity: dayId ? 0.92 : 0.58
+            }).addTo(allLayers);
+          }
+        }
+      });
+
+      if (bounds.length) {
+        map.fitBounds(bounds, { padding: [42, 42], maxZoom: dayId ? 13 : 5 });
+      }
+    }
+
+    function renderSidebar() {
+      const list = document.getElementById("dayList");
+      list.innerHTML = days.map(day => `
+        <article class="day-card" id="card-${day.id}">
+          <button class="day-head" type="button" data-day="${day.id}">
+            <span class="date">${day.date}</span>
+            <span>
+              <span class="day-title">${day.title}</span>
+              <span class="day-meta">${day.meta}</span>
+              <span class="day-duration">单日总时长：${day.total}</span>
+            </span>
+          </button>
+          <div class="details">
+            <div class="duration-note"><b>单日总时长</b>：${day.total}，含景点停留、点位交通和必要候车/机场预留，不含长时间购物、排队异常和正式用餐加时。</div>
+            <ul class="timeline">
+              ${day.stops.map((stop, index) => `
+                <li class="timeline-stop" data-marker="${day.id}-${index}">
+                  <span class="number">${index + 1}</span><b>${stop[0]}</b>：${stop[3]}
+                </li>
+                ${index < day.stops.length - 1 ? `
+                  <li class="timeline-leg">
+                    <span class="mode">交通</span>${stop[0]} -> ${day.stops[index + 1][0]}：${day.legs[index] || "按现场导航"}
+                    <div class="nav-links">
+                      ${renderNavLinks(stop, day.stops[index + 1])}
+                    </div>
+                  </li>
+                ` : ""}
+              `).join("")}
+            </ul>
+          </div>
+        </article>
+      `).join("");
+
+      list.querySelectorAll(".day-head").forEach(button => {
+        button.addEventListener("click", () => {
+          const dayId = button.dataset.day;
+          activeDayId = dayId;
+          updateActiveState();
+          renderMap(activeDayId);
+        });
+      });
+
+      list.querySelectorAll("[data-marker]").forEach(item => {
+        item.addEventListener("mouseenter", () => {
+          const marker = markerRefs.get(item.dataset.marker);
+          if (marker) marker.openPopup();
+        });
+      });
+
+      list.querySelectorAll(".nav-link").forEach(button => {
+        button.addEventListener("click", () => drawRoute(button));
+      });
+    }
+
+    function navUrl(from, to, mode) {
+      const origin = `${from[1]},${from[2]}`;
+      const destination = `${to[1]},${to[2]}`;
+      return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=${mode}`;
+    }
+
+    function renderNavLinks(from, to) {
+      return [
+        ["步行", "walking"],
+        ["公交", "transit"],
+        ["打车/驾车", "driving"]
+      ].map(([label, mode]) => `
+        <button class="nav-link" type="button" data-mode="${mode}" data-from-lat="${from[1]}" data-from-lng="${from[2]}" data-to-lat="${to[1]}" data-to-lng="${to[2]}" data-from-name="${from[0]}" data-to-name="${to[0]}">${label}</button>
+      `).join("");
+    }
+
+    function setRouteStatus(html) {
+      document.getElementById("routeStatus").innerHTML = html;
+    }
+
+    function requireAmapKey() {
+      if (AMAP_WEB_SERVICE_KEY) return;
+      throw new Error("请先在上方保存高德 Web 服务 Key。Key 只保存在本机浏览器，不会上传到 GitHub。");
+    }
+
+    function setupAmapKeyPanel() {
+      const input = document.getElementById("amapKeyInput");
+      const button = document.getElementById("saveAmapKey");
+      if (!input || !button) return;
+      input.value = AMAP_WEB_SERVICE_KEY;
+      button.addEventListener("click", () => {
+        AMAP_WEB_SERVICE_KEY = input.value.trim();
+        if (AMAP_WEB_SERVICE_KEY) {
+          localStorage.setItem(AMAP_KEY_STORAGE, AMAP_WEB_SERVICE_KEY);
+          setRouteStatus("高德 Web 服务 Key 已保存到本机浏览器。现在可以点击路线按钮绘制步行/打车路线。");
+          return;
+        }
+        localStorage.removeItem(AMAP_KEY_STORAGE);
+        setRouteStatus("已清空高德 Web 服务 Key。需要绘制路线时请重新保存 Key。");
+      });
+    }
+
+    function requestJsonp(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `amapRoute_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement("script");
+        const separator = url.includes("?") ? "&" : "?";
+        let settled = false;
+
+        window[callbackName] = data => {
+          settled = true;
+          cleanup();
+          resolve(data);
+        };
+
+        function cleanup() {
+          delete window[callbackName];
+          script.remove();
+        }
+
+        script.onerror = () => {
+          if (settled) return;
+          cleanup();
+          reject(new Error("jsonp failed"));
+        };
+
+        script.src = `${url}${separator}callback=${callbackName}`;
+        document.body.appendChild(script);
+
+        setTimeout(() => {
+          if (settled) return;
+          cleanup();
+          reject(new Error("jsonp timeout"));
+        }, 12000);
+      });
+    }
+
+    function parseAmapPolyline(data) {
+      const path = data && data.route && data.route.paths && data.route.paths[0];
+      if (!path || !path.steps) return null;
+      const coords = [];
+      path.steps.forEach(step => {
+        if (!step.polyline) return;
+        step.polyline.split(";").forEach(point => {
+          const [lng, lat] = point.split(",").map(Number);
+          if (Number.isFinite(lat) && Number.isFinite(lng)) coords.push([lat, lng]);
+        });
+      });
+      if (coords.length < 2) return null;
+      return {
+        coords,
+        distance: Number(path.distance || 0),
+        duration: Number(path.duration || 0)
+      };
+    }
+
+    async function getAmapRoute(mode, from, to) {
+      requireAmapKey();
+      const endpoint = mode === "driving"
+        ? "https://restapi.amap.com/v3/direction/driving"
+        : "https://restapi.amap.com/v3/direction/walking";
+      const params = new URLSearchParams({
+        key: AMAP_WEB_SERVICE_KEY,
+        origin: `${from[1]},${from[0]}`,
+        destination: `${to[1]},${to[0]}`,
+        output: "json"
+      });
+      const data = await requestJsonp(`${endpoint}?${params.toString()}`);
+      if (!data || data.status !== "1") {
+        throw new Error(data && data.info ? data.info : "amap route failed");
+      }
+      const route = parseAmapPolyline(data);
+      if (!route) throw new Error("amap route empty");
+      return route;
+    }
+
+    async function getOsrmRoute(mode, from, to) {
+      const profile = mode === "driving" ? "driving" : "foot";
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson&steps=false`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("osrm route request failed");
+      const data = await response.json();
+      const route = data.routes && data.routes[0];
+      if (!route || !route.geometry) throw new Error("osrm route not found");
+      return {
+        coords: route.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+        distance: route.distance,
+        duration: route.duration
+      };
+    }
+
+    function drawRoutePolyline(route, mode, sourceName) {
+      L.polyline(route.coords, {
+        color: mode === "driving" ? "#dc2626" : "#0f766e",
+        weight: 5,
+        opacity: 0.9
+      }).addTo(routeLayer);
+      map.fitBounds(route.coords, { padding: [60, 60], maxZoom: 15 });
+      const minutes = Math.round(route.duration / 60);
+      const km = (route.distance / 1000).toFixed(1);
+      return `${sourceName}，约 ${km} km / ${minutes} 分钟`;
+    }
+
+    async function drawRoute(button) {
+      const mode = button.dataset.mode;
+      const fromName = button.dataset.fromName;
+      const toName = button.dataset.toName;
+      const from = [Number(button.dataset.fromLat), Number(button.dataset.fromLng)];
+      const to = [Number(button.dataset.toLat), Number(button.dataset.toLng)];
+      routeLayer.clearLayers();
+
+      if (mode === "transit") {
+        L.polyline([from, to], {
+          color: "#2563eb",
+          weight: 4,
+          opacity: 0.75,
+          dashArray: "6 8"
+        }).addTo(routeLayer);
+        map.fitBounds([from, to], { padding: [60, 60], maxZoom: 13 });
+        setRouteStatus(`<strong>公交段</strong>：${fromName} -> ${toName}。本地地图先画直线参考；欧洲实时公交/换乘需要 Google Directions API 或城市交通 API，高德海外公交数据不适合这条线路。`);
+        return;
+      }
+
+      const label = mode === "driving" ? "打车/驾车" : "步行";
+      setRouteStatus(`<strong>${label}路线计算中</strong>：优先请求高德 Web 服务。${fromName} -> ${toName}`);
+
+      try {
+        const route = await getAmapRoute(mode, from, to);
+        const summary = drawRoutePolyline(route, mode, "高德 Web 服务");
+        setRouteStatus(`<strong>${label}路线</strong>：${fromName} -> ${toName}，${summary}。欧洲路网请现场再核对。`);
+      } catch (amapError) {
+        try {
+          const route = await getOsrmRoute(mode, from, to);
+          const summary = drawRoutePolyline(route, mode, "高德无可用结果，已回退 OSRM");
+          setRouteStatus(`<strong>${label}路线</strong>：${fromName} -> ${toName}，${summary}。现场以实时导航为准。`);
+        } catch (osrmError) {
+          L.polyline([from, to], {
+            color: mode === "driving" ? "#dc2626" : "#0f766e",
+            weight: 4,
+            opacity: 0.75,
+            dashArray: "6 8"
+          }).addTo(routeLayer);
+          map.fitBounds([from, to], { padding: [60, 60], maxZoom: 13 });
+          setRouteStatus(`<strong>${label}路线暂时无法计算</strong>：高德和 OSRM 都没有返回可用路径，已在地图中画出起终点参考线。`);
+        }
+      }
+    }
+
+    function pushAmapPolyline(coords, polyline) {
+      if (!polyline) return;
+      polyline.split(";").forEach(point => {
+        const [lng, lat] = point.split(",").map(Number);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) coords.push([lat, lng]);
+      });
+    }
+
+    function formatAmapRouteMetric(route) {
+      const minutes = route.duration ? Math.round(route.duration / 60) : null;
+      const km = route.distance ? (route.distance / 1000).toFixed(1) : null;
+      if (km && minutes) return `${km} km / ${minutes} 分钟`;
+      if (minutes) return `${minutes} 分钟`;
+      if (km) return `${km} km`;
+      return "时间/距离以高德返回为准";
+    }
+
+    function collectAmapPolylines(value, coords) {
+      if (!value || typeof value !== "object") return;
+      if (typeof value.polyline === "string") pushAmapPolyline(coords, value.polyline);
+      Object.keys(value).forEach(key => {
+        const child = value[key];
+        if (Array.isArray(child)) child.forEach(item => collectAmapPolylines(item, coords));
+        else if (child && typeof child === "object") collectAmapPolylines(child, coords);
+      });
+    }
+
+    function parseAmapPathChoices(data, mode) {
+      const rawPaths = data && data.route && data.route.paths;
+      const paths = Array.isArray(rawPaths) ? rawPaths : rawPaths ? [rawPaths] : [];
+      if (!paths || !paths.length) return [];
+      return paths.map((path, index) => {
+        const coords = [];
+        collectAmapPolylines(path, coords);
+        if (coords.length < 2) return null;
+        return {
+          mode,
+          coords,
+          summary: path.strategy || path.instruction || `方案 ${index + 1}`,
+          distance: Number(path.distance || 0),
+          duration: Number((path.cost && path.cost.duration) || path.duration || 0)
+        };
+      }).filter(Boolean);
+    }
+
+    function parseAmapTransitChoices(data) {
+      const rawTransits = data && data.route && data.route.transits;
+      const transits = Array.isArray(rawTransits) ? rawTransits : rawTransits ? [rawTransits] : [];
+      if (!transits || !transits.length) return [];
+      return transits.map((transit, index) => {
+        const coords = [];
+        collectAmapPolylines(transit, coords);
+        if (coords.length < 2) return null;
+        const lineNames = [];
+        (transit.segments || []).forEach(segment => {
+          (((segment.bus || {}).buslines) || []).forEach(line => {
+            if (line.name) lineNames.push(line.name);
+          });
+        });
+        return {
+          mode: "transit",
+          coords,
+          summary: lineNames.slice(0, 3).join(" + ") || `公交方案 ${index + 1}`,
+          distance: Number(transit.distance || 0),
+          duration: Number((transit.cost && transit.cost.duration) || transit.duration || 0),
+          cost: transit.cost && (transit.cost.transit_fee || transit.cost.taxi_fee || transit.cost.cost)
+        };
+      }).filter(Boolean);
+    }
+
+    function inferAmapCity(point) {
+      const [lat, lng] = point;
+      // AMap Web Service transit requires AMap citycode, e.g. Beijing is 010.
+      // The overseas cities in this itinerary do not have public AMap citycodes
+      // usable by /v5/direction/transit/integrated.
+      return "";
+    }
+
+    async function getAmapRouteChoices(mode, from, to) {
+      requireAmapKey();
+      if (mode === "transit") {
+        const city1 = inferAmapCity(from);
+        const city2 = inferAmapCity(to);
+        if (!city1 || !city2) {
+          throw new Error("高德 Web 服务公交接口要求 city1/city2 为高德 citycode；本行程的海外城市没有可用的高德 Web 服务 citycode。高德 App 可查海外公交，但该能力没有通过这个 Web 服务接口开放。");
+        }
+        const params = new URLSearchParams({
+          key: AMAP_WEB_SERVICE_KEY,
+          origin: `${from[1]},${from[0]}`,
+          destination: `${to[1]},${to[0]}`,
+          city1,
+          city2,
+          strategy: "0",
+          AlternativeRoute: "5",
+          max_trans: "4",
+          show_fields: "cost,navi",
+          output: "json"
+        });
+        const data = await requestJsonp(`https://restapi.amap.com/v5/direction/transit/integrated?${params.toString()}`);
+        if (!data || String(data.status) !== "1") throw new Error(data && data.info ? data.info : "高德公交无结果");
+        const choices = parseAmapTransitChoices(data);
+        if (!choices.length) throw new Error("高德公交未返回可绘制路线");
+        return choices;
+      }
+
+      const endpoint = mode === "driving"
+        ? "https://restapi.amap.com/v5/direction/driving"
+        : "https://restapi.amap.com/v5/direction/walking";
+      const params = new URLSearchParams({
+        key: AMAP_WEB_SERVICE_KEY,
+        origin: `${from[1]},${from[0]}`,
+        destination: `${to[1]},${to[0]}`,
+        alternative_route: "3",
+        AlternativeRoute: "3",
+        show_fields: "cost,navi",
+        output: "json"
+      });
+      const data = await requestJsonp(`${endpoint}?${params.toString()}`);
+      if (!data || String(data.status) !== "1") throw new Error(data && data.info ? data.info : "高德路线无结果");
+      const choices = parseAmapPathChoices(data, mode);
+      if (!choices.length) throw new Error("高德未返回可绘制路线");
+      return choices;
+    }
+
+    function drawAmapChoice(index) {
+      const route = currentRouteChoices[index];
+      if (!route) return;
+      routeLayer.clearLayers();
+      L.polyline(route.coords, {
+        color: route.mode === "driving" ? "#dc2626" : route.mode === "transit" ? "#2563eb" : "#0f766e",
+        weight: 5,
+        opacity: 0.9
+      }).addTo(routeLayer);
+      map.fitBounds(route.coords, { padding: [60, 60], maxZoom: 15 });
+      document.querySelectorAll(".route-choice").forEach(button => {
+        button.classList.toggle("active", Number(button.dataset.routeIndex) === index);
+      });
+    }
+
+    function showAmapRouteChoices(mode, fromName, toName, choices) {
+      currentRouteChoices = choices;
+      const label = mode === "driving" ? "打车/驾车" : mode === "transit" ? "公交" : "步行";
+      setRouteStatus(`
+        <strong>${label}路线</strong>：${fromName} -> ${toName}，高德返回 ${choices.length} 条候选。请选择一条绘制到右侧地图。
+        <div class="route-choice-list">
+          ${choices.map((route, index) => `
+            <button class="route-choice ${index === 0 ? "active" : ""}" type="button" data-route-index="${index}">
+              方案 ${index + 1}：${formatAmapRouteMetric(route)}${route.cost ? ` / 约 ${route.cost} 元` : ""}<br>
+              ${route.summary || "高德推荐路线"}
+            </button>
+          `).join("")}
+        </div>
+      `);
+      drawAmapChoice(0);
+    }
+
+    async function drawRoute(button) {
+      const mode = button.dataset.mode;
+      const fromName = button.dataset.fromName;
+      const toName = button.dataset.toName;
+      const from = [Number(button.dataset.fromLat), Number(button.dataset.fromLng)];
+      const to = [Number(button.dataset.toLat), Number(button.dataset.toLng)];
+      const label = mode === "driving" ? "打车/驾车" : mode === "transit" ? "公交" : "步行";
+      routeLayer.clearLayers();
+      currentRouteChoices = [];
+      setRouteStatus(`<strong>${label}路线计算中</strong>：正在请求高德 Web 服务。${fromName} -> ${toName}`);
+
+      try {
+        const choices = await getAmapRouteChoices(mode, from, to);
+        showAmapRouteChoices(mode, fromName, toName, choices);
+      } catch (error) {
+        setRouteStatus(`<strong>${label}路线暂时无法计算</strong>：高德没有返回可用候选。${error.message || ""}`);
+      }
+    }
+
+    document.getElementById("routeStatus").addEventListener("click", event => {
+      const choice = event.target.closest(".route-choice");
+      if (!choice) return;
+      drawAmapChoice(Number(choice.dataset.routeIndex));
+    });
+
+    function updateActiveState() {
+      document.getElementById("showAll").classList.toggle("active", !activeDayId);
+      document.querySelectorAll(".day-card").forEach(card => {
+        const isOpen = card.id === `card-${activeDayId}`;
+        card.classList.toggle("open", isOpen);
+      });
+      document.querySelectorAll(".day-head").forEach(button => {
+        button.classList.toggle("active", button.dataset.day === activeDayId);
+      });
+    }
+
+    document.getElementById("showAll").addEventListener("click", () => {
+      activeDayId = null;
+      updateActiveState();
+      renderMap(null);
+    });
+
+    document.getElementById("fitAll").addEventListener("click", () => renderMap(activeDayId));
+    document.getElementById("openGuides").addEventListener("click", () => {
+      window.location.href = "attraction-guides.html";
+    });
+
+    setupAmapKeyPanel();
+    renderSidebar();
+    updateActiveState();
+    renderMap(activeDayId);
+  </script>
+</body>
+</html>
