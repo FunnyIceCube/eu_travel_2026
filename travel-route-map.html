@@ -679,6 +679,10 @@
         return;
       }
 
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") form.requestSubmit();
+      });
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         try {
