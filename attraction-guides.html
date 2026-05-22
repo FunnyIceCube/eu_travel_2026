@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>6.18-6.26 景点逐页攻略</title>
   <script>document.documentElement.classList.add("auth-pending");</script>
+  <script src="config.js"></script>
   <style>
     :root {
       --bg: #f6f2ea;
@@ -453,6 +454,11 @@
         document.documentElement.classList.remove("auth-pending");
         gate.remove();
       };
+
+      if (window.EU_TRAVEL_CONFIG && window.EU_TRAVEL_CONFIG.disablePagePassword) {
+        unlock();
+        return;
+      }
 
       if (localStorage.getItem(storageKey) === authHash) {
         unlock();

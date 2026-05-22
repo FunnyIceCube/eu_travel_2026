@@ -669,6 +669,11 @@
         gate.remove();
       };
 
+      if (window.EU_TRAVEL_CONFIG && window.EU_TRAVEL_CONFIG.disablePagePassword) {
+        unlock();
+        return;
+      }
+
       if (localStorage.getItem(storageKey) === authHash) {
         unlock();
         return;
