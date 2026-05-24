@@ -271,6 +271,36 @@
       grid-column: 1 / -1;
     }
 
+    .xhs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .xhs-card {
+      display: grid;
+      gap: 6px;
+      min-height: 92px;
+      padding: 12px;
+      border: 1px solid #e5ded2;
+      border-radius: 8px;
+      color: inherit;
+      text-decoration: none;
+      background: #fffaf2;
+    }
+
+    .xhs-card b {
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .xhs-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     h3 {
       margin: 0 0 10px;
       font-size: 16px;
@@ -320,7 +350,8 @@
       .filters { max-height: 80px; }
       .content { padding-bottom: 28px; }
       .quick,
-      .grid { grid-template-columns: 1fr; }
+      .grid,
+      .xhs-grid { grid-template-columns: 1fr; }
     }
 
     html.auth-pending body {
@@ -1045,6 +1076,52 @@
       return items.map(item => `<li>${item}</li>`).join("");
     }
 
+    function primaryCnName(name) {
+      return name.split(/[A-Za-zÀ-ÿ]/)[0].trim() || name;
+    }
+
+    function xhsSearchUrl(spot, category) {
+      const keyword = `${spot.city} ${primaryCnName(spot.name)} ${category}`;
+      return `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}&type=51`;
+    }
+
+    function xhsCategoryLinks(spot) {
+      return [
+        {
+          label: "景色图",
+          query: "景色 图文 攻略",
+          note: "看整体环境、外观、日景/夜景和是否值得专门停留。"
+        },
+        {
+          label: "拍照机位",
+          query: "拍照 机位 出片",
+          note: "找低角度、长焦、广场边缘、桥边和少人时段。"
+        },
+        {
+          label: "美食周边",
+          query: "美食 餐厅 小吃",
+          note: "优先看步行 10-15 分钟范围内的咖啡、甜品、小吃和正餐。"
+        },
+        {
+          label: "玩法避坑",
+          query: "攻略 避坑 排队 路线",
+          note: "核对排队、预约、路线顺序、交通和是否需要删减。"
+        }
+      ].map(item => ({
+        ...item,
+        url: xhsSearchUrl(spot, item.query)
+      }));
+    }
+
+    function renderXhsCards(spot) {
+      return xhsCategoryLinks(spot).map(item => `
+        <a class="xhs-card" href="${item.url}" target="_blank" rel="noopener noreferrer">
+          <b>${item.label}</b>
+          <span>${item.note}</span>
+        </a>
+      `).join("");
+    }
+
     async function loadWikiImage(spot, token) {
       const hero = document.querySelector(".hero");
       if (!hero || hero.dataset.token !== token) return;
@@ -1126,8 +1203,13 @@
               <ul>${listItems(xhsTips)}</ul>
             </article>
             <article class="section wide">
+              <h3>小红书分类入口</h3>
+              <p class="source">按当前景点自动拆成景色、拍照、美食、玩法四类搜索；打开链接后优先看近一年、收藏/评论较多、图片清晰且路线描述具体的笔记。</p>
+              <div class="xhs-grid">${renderXhsCards(spot)}</div>
+            </article>
+            <article class="section wide">
               <h3>资料参考</h3>
-              <p class="source">内容结合官方旅游/景点页面、常见旅行者攻略和本行程节奏整理。小红书补充来自站内搜索结果标题、搜索建议和高频主题归纳，不复制笔记原文。参考：${spot.source}。图片优先使用 Wikipedia/Wikimedia 页面图源，加载失败时显示本地占位背景。</p>
+              <p class="source">内容结合官方旅游/景点页面、常见旅行者攻略和本行程节奏整理。小红书补充来自站内搜索结果标题、搜索建议和高频主题归纳，不复制笔记原文。参考：${spot.source}。图片优先使用 Wikipedia/Wikimedia 页面图源；小红书分类入口用于继续查看站内真实笔记图片和链接。</p>
             </article>
           </div>
         </section>
