@@ -314,6 +314,78 @@
       line-height: 1.45;
     }
 
+    .meal-plan {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 10px;
+    }
+
+    .meal-card {
+      padding: 9px 10px;
+      border: 1px solid #eadfce;
+      border-radius: 8px;
+      background: #fffaf0;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .meal-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .meal-time {
+      color: var(--accent-2);
+      font-weight: 800;
+    }
+
+    .meal-area {
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    .meal-note {
+      margin: 0 0 7px;
+      color: var(--muted);
+    }
+
+    .meal-options {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .meal-option {
+      color: var(--muted);
+    }
+
+    .meal-option b {
+      color: var(--text);
+    }
+
+    .meal-rating {
+      color: #0f766e;
+      font-weight: 750;
+    }
+
+    .meal-links {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-left: 4px;
+    }
+
+    .meal-links a {
+      color: #2563eb;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
     .timeline li {
       position: relative;
       margin: 0 0 8px;
@@ -1155,6 +1227,211 @@
       }
     ];
 
+    const mealPlans = {
+      d0618: [
+        {
+          time: "12:00 午餐",
+          area: "布鲁塞尔大广场/皇家拱廊附近",
+          note: "放在大广场、撒尿小童和皇家拱廊之间，不绕回车站；建议控制在 60-75 分钟。",
+          xhs: "布鲁塞尔 大广场 美食 午餐 攻略",
+          options: [
+            { name: "Nuetnigenough", city: "Brussels", rating: "Google Maps 实时评分入口", desc: "比利时菜和啤酒搭配，离大广场步行可达，适合正式吃一顿当地菜。" },
+            { name: "Fin de Siècle", city: "Brussels", rating: "Google Maps 实时评分入口", desc: "本地菜量大、氛围随意，适合想吃炖肉、香肠、薯条这类经典菜。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "巴黎北站/蒙马特方向",
+          note: "Eurostar 到巴黎后先去酒店放行李，再在北站或蒙马特附近吃饭最顺。",
+          xhs: "巴黎 北站 蒙马特 晚餐 Bouillon 攻略",
+          options: [
+            { name: "Bouillon Pigalle", city: "Paris", rating: "Google Maps 实时评分入口", desc: "经典平价法餐，离蒙马特和 Pigalle 近，排队常见但翻台快。" },
+            { name: "Bouillon Chartier Gare de l'Est", city: "Paris", rating: "Google Maps 实时评分入口", desc: "离北站/东站方便，适合不想再跑远的一晚。" }
+          ]
+        }
+      ],
+      d0619: [
+        {
+          time: "12:00 午餐",
+          area: "卢浮宫/杜乐丽/皇宫花园附近",
+          note: "上午卢浮宫后就近吃，下午再去西岱岛和埃菲尔铁塔，动线最省时间。",
+          xhs: "巴黎 卢浮宫 附近 午餐 攻略",
+          options: [
+            { name: "Bistrot Victoires", city: "Paris", rating: "Google Maps 实时评分入口", desc: "经典小酒馆，鸭腿、牛排薯条一类比较稳，离卢浮宫不远。" },
+            { name: "Kodawari Ramen Yokocho", city: "Paris", rating: "Google Maps 实时评分入口", desc: "想换口味可选，排队概率高，适合把午餐压缩成快吃。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "蒙马特/圣心大教堂附近",
+          note: "放在圣心大教堂傍晚看景之后，吃完可慢慢下山回酒店。",
+          xhs: "巴黎 蒙马特 晚餐 攻略",
+          options: [
+            { name: "Bouillon Pigalle", city: "Paris", rating: "Google Maps 实时评分入口", desc: "价格友好、选择多，适合一天暴走后的正餐。" },
+            { name: "Le Relais Gascon", city: "Paris", rating: "Google Maps 实时评分入口", desc: "蒙马特附近常见推荐，沙拉和法式家常菜比较适合轻松晚餐。" }
+          ]
+        }
+      ],
+      d0620: [
+        {
+          time: "12:00 午餐",
+          area: "巴黎玛黑区",
+          note: "上午逛玛黑/奥赛后在玛黑区吃，之后直接去 CDG，不再往景点区折返。",
+          xhs: "巴黎 玛黑区 午餐 必吃 攻略",
+          options: [
+            { name: "L'As du Fallafel", city: "Paris", rating: "Google Maps 实时评分入口", desc: "玛黑区排队名店，适合快速解决午餐，注意现场队伍。" },
+            { name: "Breizh Café Le Marais", city: "Paris", rating: "Google Maps 实时评分入口", desc: "法式可丽饼，坐下来吃更舒服，适合不想边走边吃。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "罗马特雷维喷泉/万神殿附近",
+          note: "到罗马入住后走到喷泉夜景区，晚餐也放在这一片，减少第一晚交通。",
+          xhs: "罗马 特雷维喷泉 万神殿 晚餐 攻略",
+          options: [
+            { name: "Piccolo Buco", city: "Rome", rating: "Google Maps 实时评分入口", desc: "特雷维附近披萨热门店，适合第一晚轻松吃。" },
+            { name: "Armando al Pantheon", city: "Rome", rating: "Google Maps 实时评分入口", desc: "罗马菜口碑店，通常需要提前订位；订不到就当备选参考。" }
+          ]
+        }
+      ],
+      d0621: [
+        {
+          time: "12:00 午餐",
+          area: "斗兽场/古罗马广场附近",
+          note: "上午斗兽场和古罗马广场后就近吃，下午步行去威尼斯广场、万神殿、纳沃纳。",
+          xhs: "罗马 斗兽场 附近 午餐 攻略",
+          options: [
+            { name: "La Taverna dei Fori Imperiali", city: "Rome", rating: "Google Maps 实时评分入口", desc: "古城核心区较稳的罗马菜，建议提前订位。" },
+            { name: "Alle Carrette", city: "Rome", rating: "Google Maps 实时评分入口", desc: "披萨和简餐，适合不想把午餐拖太久。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "纳沃纳广场/万神殿/西班牙台阶之间",
+          note: "下午一路走到纳沃纳、万神殿和西班牙台阶，晚餐放在中间区域方便回酒店。",
+          xhs: "罗马 纳沃纳 万神殿 晚餐 手工意面",
+          options: [
+            { name: "Osteria da Fortunata", city: "Rome", rating: "Google Maps 实时评分入口", desc: "手工意面热门店，排队常见，适合想吃仪式感意面。" },
+            { name: "Mimi e Coco", city: "Rome", rating: "Google Maps 实时评分入口", desc: "纳沃纳附近人气小馆，订位更稳。" }
+          ]
+        }
+      ],
+      d0622: [
+        {
+          time: "12:00 午餐",
+          area: "梵蒂冈博物馆/圣彼得大教堂附近",
+          note: "梵蒂冈上午参观很耗体力，午餐安排成快吃，留足时间回 Termini 坐火车去比萨。",
+          xhs: "梵蒂冈 附近 午餐 Pizzarium 攻略",
+          options: [
+            { name: "Pizzarium Bonci", city: "Rome", rating: "Google Maps 实时评分入口", desc: "切片披萨名店，适合快吃和打包。" },
+            { name: "Pastasciutta", city: "Rome", rating: "Google Maps 实时评分入口", desc: "梵蒂冈旁快餐意面，适合赶火车前控制时间。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "比萨中央站/阿诺河岸",
+          note: "傍晚到比萨后先入住或放行李，再在河岸附近吃晚餐散步。",
+          xhs: "比萨 阿诺河 晚餐 攻略",
+          options: [
+            { name: "Osteria dei Cavalieri", city: "Pisa", rating: "Google Maps 实时评分入口", desc: "比萨口碑意餐，适合正式晚餐，建议预订。" },
+            { name: "I Porci Comodi", city: "Pisa", rating: "Google Maps 实时评分入口", desc: "三明治/拼盘类，轻松便宜，适合不想吃太久。" }
+          ]
+        }
+      ],
+      d0623: [
+        {
+          time: "12:00 午餐",
+          area: "比萨奇迹广场/回中央站路上",
+          note: "上午斜塔和奇迹广场后吃午餐，再回中央站取行李去威尼斯。",
+          xhs: "比萨 斜塔 附近 午餐 攻略",
+          options: [
+            { name: "I Porci Comodi", city: "Pisa", rating: "Google Maps 实时评分入口", desc: "适合拍完斜塔后快速吃，节省赶车时间。" },
+            { name: "Osteria dei Cavalieri", city: "Pisa", rating: "Google Maps 实时评分入口", desc: "想坐下来吃一顿就选它，但要预留更长午餐时间。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "威尼斯里亚托/圣马可方向",
+          note: "到威尼斯后买水上巴士票，晚餐放在里亚托到圣马可之间，吃完看圣马可夜景。",
+          xhs: "威尼斯 里亚托 圣马可 晚餐 攻略",
+          options: [
+            { name: "Cantina Do Spade", city: "Venice", rating: "Google Maps 实时评分入口", desc: "威尼斯 bacaro 氛围，适合吃 cicchetti 和海鲜小食。" },
+            { name: "Osteria Alla Staffa", city: "Venice", rating: "Google Maps 实时评分入口", desc: "正餐更完整，建议提前订位。" }
+          ]
+        }
+      ],
+      d0624: [
+        {
+          time: "12:00 午餐",
+          area: "圣马可/里亚托附近",
+          note: "上午圣马可大教堂和总督宫后就近解决，下午走叹息桥、里亚托和卡纳雷吉欧。",
+          xhs: "威尼斯 圣马可 里亚托 午餐 攻略",
+          options: [
+            { name: "Dal Moro's Fresh Pasta To Go", city: "Venice", rating: "Google Maps 实时评分入口", desc: "外带意面，适合把午餐压缩成快吃。" },
+            { name: "Trattoria Al Gazzettino", city: "Venice", rating: "Google Maps 实时评分入口", desc: "圣马可附近热门餐厅，想坐下吃建议预订或错峰。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "卡纳雷吉欧",
+          note: "傍晚安排在卡纳雷吉欧，游客少一点，适合吃晚餐和喝一杯。",
+          xhs: "威尼斯 卡纳雷吉欧 晚餐 bacaro 攻略",
+          options: [
+            { name: "Al Timon", city: "Venice", rating: "Google Maps 实时评分入口", desc: "运河边 bacaro，适合 cicchetti、酒和轻松晚餐。" },
+            { name: "Paradiso Perduto", city: "Venice", rating: "Google Maps 实时评分入口", desc: "海鲜和本地氛围更强，晚餐建议提前确认营业和订位。" }
+          ]
+        }
+      ],
+      d0625: [
+        {
+          time: "12:00 午餐",
+          area: "穆拉诺玻璃岛/返回主岛前",
+          note: "上午玻璃岛行程后在岛上吃，或者回主岛前解决，下午再去火车站。",
+          xhs: "威尼斯 穆拉诺 玻璃岛 午餐 攻略",
+          options: [
+            { name: "Osteria al Duomo", city: "Murano Venice", rating: "Google Maps 实时评分入口", desc: "穆拉诺岛上稳定选择，适合不想回主岛找饭。" },
+            { name: "B Restaurant alla Vecchia Pescheria", city: "Murano Venice", rating: "Google Maps 实时评分入口", desc: "岛上吃海鲜和意面较方便，午餐后继续逛玻璃店也顺。" }
+          ]
+        },
+        {
+          time: "19:00 晚餐",
+          area: "米兰 Duomo/Brera/中央站方向",
+          note: "到米兰后先放行李，再按酒店位置选 Duomo 或 Brera，避免来回横穿城市。",
+          xhs: "米兰 Duomo Brera 晚餐 攻略",
+          options: [
+            { name: "Piz", city: "Milan", rating: "Google Maps 实时评分入口", desc: "Duomo 附近披萨热门店，适合到米兰第一晚轻松吃。" },
+            { name: "Ratanà", city: "Milan", rating: "Google Maps 实时评分入口", desc: "现代米兰菜，离中央站/Porta Nuova 相对顺，建议预订。" }
+          ]
+        }
+      ],
+      d0626: [
+        {
+          time: "12:00 午餐",
+          area: "米兰 Duomo/埃马努埃莱二世长廊附近",
+          note: "上午大教堂和长廊后就近吃，下午去《最后的晚餐》或取行李去机场。",
+          xhs: "米兰 Duomo 午餐 Luini Piz 攻略",
+          options: [
+            { name: "Luini", city: "Milan", rating: "Google Maps 实时评分入口", desc: "米兰经典 panzerotti，适合快吃和边走边逛。" },
+            { name: "Piz", city: "Milan", rating: "Google Maps 实时评分入口", desc: "如果前一晚没吃，可以放到午餐；用餐时间比 Luini 更长。" }
+          ]
+        },
+        {
+          time: "18:00-18:30 晚餐/轻食",
+          area: "米兰马尔彭萨机场",
+          note: "20:00 返程不建议 19:00 还在市区吃饭；建议安检后在机场吃轻食或打包。",
+          xhs: "米兰 马尔彭萨机场 餐厅 攻略",
+          options: [
+            { name: "Panino Giusto Malpensa", city: "Milan Malpensa Airport", rating: "机场当日营业为准", desc: "适合三明治/轻食，重点是节省登机前时间。" },
+            { name: "Obicà Mozzarella Bar Malpensa", city: "Milan Malpensa Airport", rating: "机场当日营业为准", desc: "如果对应航站楼营业，可作为坐下吃的备选。" }
+          ]
+        }
+      ]
+    };
+
+    days.forEach(day => {
+      day.meals = mealPlans[day.id] || [];
+    });
+
     document.querySelector("h1").textContent = "布鲁塞尔、巴黎、罗马、梵蒂冈、比萨、威尼斯、米兰";
     document.querySelector(".subtitle").textContent = "2026.6.18-6.26 按天串联路线。巴黎压缩为一日半，新增罗马、梵蒂冈和比萨，不再安排佛罗伦萨；点击日期切换，点击地图点位查看顺序、交通方式和大致耗时。";
 
@@ -1241,6 +1518,45 @@
       }
     }
 
+    function googleMapsSearchUrl(option) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${option.name} ${option.city}`)}`;
+    }
+
+    function xhsSearchUrl(query) {
+      return `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(query)}&type=51`;
+    }
+
+    function renderMealPlan(day) {
+      if (!day.meals || !day.meals.length) return "";
+
+      return `
+        <div class="meal-plan" aria-label="${day.date} 餐厅安排">
+          ${day.meals.map(meal => `
+            <section class="meal-card">
+              <div class="meal-head">
+                <span class="meal-time">${meal.time}</span>
+                <span class="meal-area">${meal.area}</span>
+              </div>
+              <p class="meal-note">${meal.note}</p>
+              <ul class="meal-options">
+                ${meal.options.map(option => `
+                  <li class="meal-option">
+                    <b>${option.name}</b>
+                    <span class="meal-rating"> · ${option.rating}</span>
+                    ：${option.desc}
+                    <span class="meal-links">
+                      <a href="${googleMapsSearchUrl(option)}" target="_blank" rel="noopener">Google Maps</a>
+                      <a href="${xhsSearchUrl(`${meal.xhs} ${option.name}`)}" target="_blank" rel="noopener">小红书</a>
+                    </span>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+          `).join("")}
+        </div>
+      `;
+    }
+
     function renderSidebar() {
       const list = document.getElementById("dayList");
       list.innerHTML = days.map(day => `
@@ -1255,6 +1571,7 @@
           </button>
           <div class="details">
             <div class="duration-note"><b>单日总时长</b>：${day.total}，含景点停留、点位交通和必要候车/机场预留，不含长时间购物、排队异常和正式用餐加时。</div>
+            ${renderMealPlan(day)}
             <ul class="timeline">
               ${day.stops.map((stop, index) => `
                 <li class="timeline-stop" data-marker="${day.id}-${index}">
