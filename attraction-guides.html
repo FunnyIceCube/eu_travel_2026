@@ -333,6 +333,54 @@
       text-decoration: none;
     }
 
+    .eating-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .eating-item {
+      padding: 10px;
+      border: 1px solid #eadfce;
+      border-radius: 8px;
+      background: #fffaf0;
+    }
+
+    .eating-item + .eating-item {
+      margin-top: 0;
+    }
+
+    .eating-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: baseline;
+      margin-bottom: 5px;
+    }
+
+    .eating-time {
+      color: var(--warm);
+      font-weight: 800;
+    }
+
+    .eating-badge {
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: #0f766e;
+      background: #e7f4f2;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .eating-options {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .xhs-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2212,6 +2260,81 @@
       `;
     }
 
+    function mealRelevance(spot, meal) {
+      const name = spot.name;
+      const isLunch = meal.time.includes("午餐");
+      const isDinner = meal.time.includes("晚餐");
+
+      if (spot.day === "6/18") {
+        if (isLunch && spot.city === "布鲁塞尔") return "这个景点附近吃";
+        if (isDinner) return "晚上到巴黎后吃";
+      }
+      if (spot.day === "6/19") {
+        if (isLunch && (name.includes("卢浮宫") || name.includes("杜乐丽"))) return "看完这里就吃";
+        if (isDinner && name.includes("圣心")) return "看完夜景就吃";
+      }
+      if (spot.day === "6/20") {
+        if (isLunch && (name.includes("玛黑") || name.includes("奥赛"))) return "去机场前吃";
+        if (isDinner && name.includes("特雷维")) return "第一晚就近吃";
+      }
+      if (spot.day === "6/21") {
+        if (isLunch && (name.includes("斗兽场") || name.includes("古罗马"))) return "上午参观后吃";
+        if (isDinner && (name.includes("万神殿") || name.includes("纳沃纳") || name.includes("西班牙"))) return "傍晚这片吃";
+      }
+      if (spot.day === "6/22") {
+        if (isLunch && spot.city === "梵蒂冈") return "出梵蒂冈后吃";
+        if (isDinner && spot.city === "比萨") return "到比萨后吃";
+      }
+      if (spot.day === "6/23") {
+        if (isLunch && spot.city === "比萨") return "回车站前吃";
+        if (isDinner && spot.city === "威尼斯") return "到威尼斯后吃";
+      }
+      if (spot.day === "6/24") {
+        if (isLunch && (name.includes("圣马可") || name.includes("总督") || name.includes("叹息") || name.includes("里亚托"))) return "主岛中段吃";
+        if (isDinner && name.includes("卡纳雷吉欧")) return "本页重点";
+      }
+      if (spot.day === "6/25") {
+        if (isLunch && (name.includes("穆拉诺") || name.includes("Fondamente") || name.includes("里亚托"))) return "玻璃岛行程吃";
+        if (isDinner && spot.city === "米兰") return "到米兰后吃";
+      }
+      if (spot.day === "6/26") {
+        if (isLunch && spot.city === "米兰" && !name.includes("Santa Maria")) return "市中心午餐";
+        if (isDinner) return "机场安检后轻食";
+      }
+      return "当天备选";
+    }
+
+    function renderEatingGuide(spot) {
+      const meals = mealPlans[spot.day] || [];
+      if (!meals.length) return "";
+
+      return `
+        <ul class="eating-list">
+          ${meals.map(meal => {
+            const relevance = mealRelevance(spot, meal);
+            const options = meal.options.map(option => `
+              <b>${option.name}</b>（${option.rating}）：${option.desc}
+              <span class="meal-links">
+                <a href="${googleMapsSearchUrl(option)}" target="_blank" rel="noopener noreferrer">Google Maps</a>
+                <a href="${restaurantXhsUrl(meal, option)}" target="_blank" rel="noopener noreferrer">小红书</a>
+              </span>
+            `).join("<br>");
+            return `
+              <li class="eating-item">
+                <div class="eating-head">
+                  <span class="eating-time">${meal.time}</span>
+                  <b>${meal.area}</b>
+                  <span class="eating-badge">${relevance}</span>
+                </div>
+                <div>${meal.note}</div>
+                <div class="eating-options">${options}</div>
+              </li>
+            `;
+          }).join("")}
+        </ul>
+      `;
+    }
+
     function xhsCategoryLinks(spot) {
       return [
         {
@@ -2332,6 +2455,10 @@
             <article class="section">
               <h3>必看 / 必吃 / 必玩</h3>
               <ul>${listItems(spot.must)}</ul>
+            </article>
+            <article class="section wide">
+              <h3>本页吃饭建议</h3>
+              ${renderEatingGuide(spot)}
             </article>
             <article class="section">
               <h3>拍照点</h3>
