@@ -1,0 +1,1950 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>6.18-6.26 欧洲行程打印版 · 罗马休闲版</title>
+  <script>document.documentElement.classList.add("auth-pending");</script>
+  <script src="config.js"></script>
+  <style>
+    :root {
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #d8cfbf;
+      --paper: #fffdf8;
+      --soft: #f6f1e8;
+      --accent: #0f766e;
+      --node: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #eee7da; color: var(--text); font: 14px/1.55 "Microsoft YaHei", "PingFang SC", Arial, sans-serif; }
+    .auth-pending body { overflow: hidden; }
+    .auth-pending .print-root { display: none; }
+    .auth-gate {
+      position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px;
+      background: linear-gradient(135deg, #f8f4ec, #e4dac9);
+    }
+    .auth-card { width: min(420px, 100%); padding: 24px; background: #fffaf0; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 20px 50px rgba(31,41,55,.15); }
+    .auth-card h2 { margin: 0 0 8px; font-size: 22px; }
+    .auth-card p { margin: 0 0 16px; color: var(--muted); }
+    .auth-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    .auth-row input { min-height: 42px; padding: 0 12px; border: 1px solid #cfc6b6; border-radius: 8px; font: inherit; }
+    button, .link-button { min-height: 38px; padding: 0 14px; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent); color: white; font: inherit; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .auth-error { min-height: 20px; margin-top: 10px; color: #b91c1c; font-weight: 700; }
+    .print-root { width: min(1180px, calc(100% - 32px)); margin: 24px auto 60px; }
+    .toolbar { position: sticky; top: 0; z-index: 10; display: flex; gap: 10px; justify-content: flex-end; padding: 12px 0; background: rgba(238,231,218,.92); backdrop-filter: blur(8px); }
+    .cover, .day { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 18px; }
+    .cover h1 { margin: 0 0 8px; font-size: 30px; }
+    .cover p { margin: 0; color: var(--muted); }
+    .cover .note { margin-top: 14px; padding: 12px 14px; background: var(--soft); border-left: 4px solid var(--accent); color: var(--text); }
+    .day { page-break-inside: avoid; }
+    .day-head { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; border-bottom: 2px solid var(--line); padding-bottom: 12px; margin-bottom: 14px; }
+    .date { margin: 0 0 2px; color: var(--accent); font-weight: 800; font-size: 18px; }
+    h2 { margin: 0; font-size: 24px; }
+    .summary { text-align: right; color: var(--muted); display: grid; gap: 4px; }
+    .summary strong { color: var(--text); font-size: 16px; }
+    .section-title { margin: 18px 0 8px; font-size: 17px; color: #111827; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 12px; }
+    th, td { border: 1px solid var(--line); padding: 8px; vertical-align: top; }
+    th { background: var(--soft); text-align: left; font-size: 12px; color: #475569; }
+    th:nth-child(1), td.num { width: 34px; text-align: center; }
+    th:nth-child(2) { width: 74px; }
+    th:nth-child(3) { width: 26%; }
+    th:nth-child(4) { width: 26%; }
+    .pill { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; background: var(--accent); white-space: nowrap; }
+    .pill.node { background: var(--node); }
+    .cards { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .spot-card { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: #fff; page-break-inside: avoid; }
+    .spot-card h3 { margin: 0; font-size: 17px; }
+    .meta { margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
+    .spot-grid { display: grid; grid-template-columns: 1.05fr 1fr 1fr 1fr; gap: 12px; }
+    h4 { margin: 0 0 4px; color: var(--accent); font-size: 13px; }
+    .spot-card p { margin: 0; }
+    ul { margin: 0; padding-left: 18px; }
+    li { margin: 0 0 3px; }
+    @media print {
+      @page { size: A4; margin: 10mm; }
+      html, body { background: #fff; font-size: 10.5px; }
+      .toolbar, .auth-gate { display: none !important; }
+      .auth-pending .print-root { display: block; }
+      .print-root { width: 100%; margin: 0; }
+      .cover, .day { border: 0; border-radius: 0; padding: 0; margin: 0 0 8mm; page-break-after: always; }
+      .cover h1 { font-size: 22px; }
+      h2 { font-size: 18px; }
+      .date { font-size: 14px; }
+      .section-title { margin: 10px 0 5px; font-size: 13px; }
+      th, td { padding: 4px 5px; }
+      .spot-card { padding: 7px 8px; margin-bottom: 5px; }
+      .spot-card h3 { font-size: 12.5px; }
+      .meta, h4 { font-size: 10px; }
+      .spot-grid { grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-gate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <form class="auth-card" id="authForm">
+      <h2 id="authTitle">请输入访问密码</h2>
+      <p>这份欧洲行程攻略已设置本地访问密码。</p>
+      <div class="auth-row">
+        <input id="authPassword" type="password" autocomplete="current-password" placeholder="访问密码" autofocus />
+        <button type="submit">进入</button>
+      </div>
+      <div class="auth-error" id="authError" aria-live="polite"></div>
+    </form>
+  </div>
+  <script>
+    (() => {
+      const authHash = "a79b11521bbb6ceccb694aa47bf84d9c0e1a4ca945c4ed48abb5f1a0b9d030e5";
+      const storageKey = "eu_travel_2026_auth";
+      const gate = document.querySelector(".auth-gate");
+      const form = document.querySelector("#authForm");
+      const input = document.querySelector("#authPassword");
+      const error = document.querySelector("#authError");
+
+      const sha256Fallback = (text) => {
+        const rightRotate = (value, amount) => (value >>> amount) | (value << (32 - amount));
+        const bytes = new TextEncoder().encode(text);
+        const words = [];
+        const hash = [1779033703, 3144134277, 1013904242, 2773480762, 1359893119, 2600822924, 528734635, 1541459225];
+        const k = [1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298];
+        for (let i = 0; i < bytes.length; i++) words[i >> 2] |= bytes[i] << (24 - (i % 4) * 8);
+        words[bytes.length >> 2] |= 0x80 << (24 - (bytes.length % 4) * 8);
+        words[(((bytes.length + 8) >> 6) << 4) + 15] = bytes.length * 8;
+        for (let i = 0; i < words.length; i += 16) {
+          const w = words.slice(i, i + 16);
+          let [a, b, c, d, e, f, g, h] = hash;
+          for (let j = 0; j < 64; j++) {
+            if (j >= 16) {
+              const s0 = rightRotate(w[j - 15], 7) ^ rightRotate(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+              const s1 = rightRotate(w[j - 2], 17) ^ rightRotate(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+              w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+            }
+            const s1 = rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25);
+            const ch = (e & f) ^ (~e & g);
+            const temp1 = (h + s1 + ch + k[j] + w[j]) | 0;
+            const s0 = rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22);
+            const maj = (a & b) ^ (a & c) ^ (b & c);
+            const temp2 = (s0 + maj) | 0;
+            h = g; g = f; f = e; e = (d + temp1) | 0; d = c; c = b; b = a; a = (temp1 + temp2) | 0;
+          }
+          [a, b, c, d, e, f, g, h].forEach((value, index) => { hash[index] = (hash[index] + value) | 0; });
+        }
+        return hash.map((value) => (value >>> 0).toString(16).padStart(8, "0")).join("");
+      };
+
+      const sha256 = async (text) => {
+        if (window.crypto && crypto.subtle) {
+          const bytes = new TextEncoder().encode(text);
+          const digest = await crypto.subtle.digest("SHA-256", bytes);
+          return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
+        }
+        return sha256Fallback(text);
+      };
+
+      const unlock = () => {
+        document.documentElement.classList.remove("auth-pending");
+        gate.remove();
+      };
+
+      if (window.EU_TRAVEL_CONFIG && window.EU_TRAVEL_CONFIG.disablePagePassword) {
+        unlock();
+        return;
+      }
+
+      if (localStorage.getItem(storageKey) === authHash) {
+        unlock();
+        return;
+      }
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") form.requestSubmit();
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          const currentHash = await sha256(input.value);
+          if (currentHash === authHash) {
+            localStorage.setItem(storageKey, authHash);
+            unlock();
+            return;
+          }
+          error.textContent = "密码不正确";
+          input.select();
+        } catch (authError) {
+          error.textContent = "密码校验失败，请刷新后重试";
+        }
+      });
+    })();
+  </script>
+<main class="print-root">
+  <nav class="toolbar" aria-label="打印操作">
+    <a class="link-button" href="travel-route-map-rome-relaxed.html">返回路线图</a>
+    <button type="button" onclick="window.print()">打印 / 另存为 PDF</button>
+  </nav>
+  <section class="cover">
+    <h1>6.18-6.26 欧洲行程打印版 · 罗马休闲版</h1>
+    <p>布鲁塞尔 -> 巴黎 -> 罗马/梵蒂冈 -> 威尼斯 -> 米兰。内容合并自路线图和景点逐页攻略。</p>
+    <p class="note">打印逻辑：每一天先看“当天顺序与景点间通勤”，再看每个景点的特点、主要游玩内容、必看必玩、拍照与提醒。交通节点用蓝色标注，景点用绿色标注。</p>
+  </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/18</p>
+          <h2>布鲁塞尔落地，半日游后去巴黎</h2>
+        </div>
+        <div class="summary">
+          <span>机场火车 + 南站寄存 + 市中心步行 + Eurostar</span>
+          <strong>约 7.5-9.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>布鲁塞尔机场 BRU</strong></td>
+        <td>入境、取行李、整理出发：约 45-75 分钟</td>
+        <td>机场火车约 20-25 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>布鲁塞尔南站 Bruxelles-Midi</strong></td>
+        <td>寄存行李/确认站台：约 25-40 分钟</td>
+        <td>地铁/火车约 10-15 分钟，或步行约 20-25 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>大广场 Grand Place</strong></td>
+        <td>游览拍照：约 30-45 分钟</td>
+        <td>步行约 6 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>撒尿小童 Manneken Pis</strong></td>
+        <td>拍照打卡：约 10-15 分钟</td>
+        <td>步行约 8 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣于贝尔皇家拱廊 Galeries Royales Saint-Hubert</strong></td>
+        <td>逛街/买巧克力：约 25-40 分钟</td>
+        <td>步行约 10 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">6</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>艺术山 Mont des Arts</strong></td>
+        <td>观景拍照：约 20-30 分钟</td>
+        <td>地铁/火车约 10-15 分钟，或步行约 20-25 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">7</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>布鲁塞尔南站 Bruxelles-Midi</strong></td>
+        <td>取行李/候车：建议预留约 25-40 分钟</td>
+        <td>Eurostar 约 1小时22分</td>
+      </tr>
+    
+      <tr>
+        <td class="num">8</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>巴黎北站 Paris Gare du Nord</strong></td>
+        <td>到站出站/去酒店：约 20-40 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>大广场 Grand Place</h3>
+            <p class="meta">布鲁塞尔 · 建议 30-45 分钟 · 上午或傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>布鲁塞尔最核心的广场，市政厅和金色行会建筑围成一个视觉密度很高的空间。第一次到布鲁塞尔，这里是最值得慢慢转一圈的起点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>先站在广场中央环顾四面，再靠近市政厅看尖塔和立面细节。</li><li>如果时间够，进 Maison du Roi 一带看城市历史和撒尿小童服装相关展览。</li><li>广场夜间亮灯后氛围不同，若 Eurostar 时间允许可以回来看一眼。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：市政厅尖塔、金色行会建筑立面。</li><li>必吃：附近买华夫饼或巧克力，别在广场正中央餐厅久坐。</li><li>必玩：从大广场步行串联撒尿小童、皇家拱廊、艺术山。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场中央低角度拍市政厅尖塔。</li><li>从 Maison du Roi 一侧往市政厅方向拍全景。</li><li>傍晚蓝调时刻拍金色立面。</li><li>地面多石板，拖箱不舒服，所以先在南站寄存行李。</li><li>热门时段人非常多，拍照要等人流空档。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>撒尿小童 Manneken Pis</h3>
+            <p class="meta">布鲁塞尔 · 建议 10-15 分钟 · 顺路打卡</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>体量很小但名气很大的布鲁塞尔符号。它不是宏大景点，更像一个城市幽默感的打卡点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从大广场步行过去即可，不建议专门绕远路。</li><li>看当天是否穿了特别服装，有时会按节日更换。</li><li>拍完就走，把时间留给皇家拱廊和艺术山。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：小雕像和周边游客反应。</li><li>必吃：附近有很多华夫饼店，适合边走边吃。</li><li>必玩：和大广场一起作为布鲁塞尔半日游小环线。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>站到街对面用长焦或手机 2x 拍。</li><li>人多时拍横构图，把人群也当成现场感。</li><li>实物很小，不要期待宏伟感。</li><li>周边店铺偏游客区，买东西先看价格。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣于贝尔皇家拱廊 Galeries Royales Saint-Hubert</h3>
+            <p class="meta">布鲁塞尔 · 建议 25-40 分钟 · 午后避雨/买巧克力</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>1847 年开业的欧洲早期购物拱廊之一，玻璃顶、对称长廊和甜品巧克力店是重点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从一端走到另一端，抬头看玻璃顶和拱形结构。</li><li>挑一两家巧克力店买小盒装，不用每家都进。</li><li>想坐下休息可以选咖啡馆，但留意菜单价格。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：玻璃穹顶和长廊透视线。</li><li>必吃：比利时巧克力、饼干、咖啡。</li><li>必玩：顺路逛书店和橱窗。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>长廊中轴线拍对称构图。</li><li>靠近入口回拍，避开人群最密处。</li><li>适合雨天或暴晒时调整节奏。</li><li>巧克力品牌很多，买伴手礼比现场大量试吃更省时。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>艺术山 Mont des Arts</h3>
+            <p class="meta">布鲁塞尔 · 建议 20-30 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>连接布鲁塞尔上下城区的观景点，可以看到花园轴线和市政厅尖塔，是半日游里最适合收尾的地方。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从皇家拱廊步行过去，沿台阶慢慢上到观景平台。</li><li>看完景再回南站，交通更顺。</li><li>如果喜欢博物馆，周边有马格里特博物馆和美术馆，但这天时间不建议硬塞。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：花园轴线、布鲁塞尔市政厅尖塔。</li><li>必吃：回南站前可买三明治或轻食上车。</li><li>必玩：傍晚拍城市层次。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>站在高处平台往花园和市政厅方向拍。</li><li>用人物站在台阶边缘做前景。</li><li>台阶多，雨天注意防滑。</li><li>从这里回南站可公交/地铁，也可步行约 20 多分钟。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/19</p>
+          <h2>巴黎压缩一日精华</h2>
+        </div>
+        <div class="summary">
+          <span>地铁/RER + 步行</span>
+          <strong>约 8-10 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>卢浮宫 Louvre Museum</strong></td>
+        <td>游览：约 2.5-3 小时，建议预约早场</td>
+        <td>步行约 10 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>杜乐丽花园 Tuileries Garden</strong></td>
+        <td>散步拍照：约 20-30 分钟</td>
+        <td>地铁/步行约 20-30 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>巴黎圣母院 Notre-Dame de Paris</strong></td>
+        <td>外观+西岱岛散步：约 45-60 分钟</td>
+        <td>地铁/RER 约 25-35 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>埃菲尔铁塔 Eiffel Tower</strong></td>
+        <td>外观拍照约 30-45 分钟；登塔另加 1.5-2 小时</td>
+        <td>地铁约 20 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>凯旋门 Arc de Triomphe</strong></td>
+        <td>外观/登顶：约 40-70 分钟</td>
+        <td>地铁约 20-30 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">6</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>蒙马特圣心大教堂 Sacré-Cœur</strong></td>
+        <td>傍晚看景：约 30-45 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>卢浮宫 Louvre Museum</h3>
+            <p class="meta">巴黎 · 建议 2.5-3 小时 · 预约早场</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>世界级博物馆，藏品规模巨大。压缩巴黎行程时不要试图看全馆，按三件镇馆作品和一条动线走更现实。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>提前预约，进馆后直奔德农翼看《蒙娜丽莎》《胜利女神》《断臂维纳斯》。</li><li>再选一段感兴趣的主题，例如拿破仑三世套房或意大利绘画。</li><li>控制在 3 小时内离开，否则后面巴黎压缩日会崩。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：《蒙娜丽莎》、萨莫色雷斯胜利女神、米洛的维纳斯。</li><li>必吃：馆内简单补给即可，正餐留给市区。</li><li>必玩：玻璃金字塔外部拍照。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>金字塔前低角度拍建筑。</li><li>拿破仑庭院站在水池边拍倒影。</li><li>馆内大阶梯拍胜利女神。</li><li>周二闭馆，安检排队要留时间。</li><li>包太大不方便，轻装进馆。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>杜乐丽花园 Tuileries Garden</h3>
+            <p class="meta">巴黎 · 建议 20-30 分钟 · 卢浮宫后散步</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>卢浮宫和协和广场之间的古典花园，很适合作为博物馆后的缓冲路段。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从卢浮宫出来向西穿过花园。</li><li>找绿色铁椅坐 10 分钟恢复体力。</li><li>如果想拍轻松巴黎感，这里比卢浮宫门口更容易出片。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：林荫道、喷泉池、远处摩天轮/方尖碑视角。</li><li>必吃：花园小摊冰淇淋或咖啡。</li><li>必玩：坐椅子休息，看本地人和游客穿梭。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>喷泉边坐椅抓拍。</li><li>林荫道纵深构图。</li><li>它是过渡点，不建议停太久。</li><li>晴天无遮阴路段会晒，准备水。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>巴黎圣母院 Notre-Dame de Paris</h3>
+            <p class="meta">巴黎 · 建议 45-60 分钟 · 午后外观</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>西岱岛上的巴黎精神地标。即使不进内部，外观、塞纳河和周边桥梁也值得一段慢走。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从正立面开始看，再绕到侧后方看飞扶壁。</li><li>顺路走到塞纳河边，和莎士比亚书店方向串联。</li><li>如果内部开放且有预约，再考虑进教堂。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：正立面玫瑰窗、飞扶壁、塞纳河桥景。</li><li>必吃：附近拉丁区有可丽饼、咖啡和简餐。</li><li>必玩：西岱岛和左岸短步行。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>小桥上拍教堂和塞纳河。</li><li>后方花园方向拍飞扶壁。</li><li>周边游客多，小心随身物。</li><li>若遇活动或排队，按外观游览即可。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>埃菲尔铁塔 Eiffel Tower</h3>
+            <p class="meta">巴黎 · 建议 30-45 分钟；登塔另加 1.5-2 小时 · 傍晚到夜景</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>巴黎最强识别度的地标。压缩行程里推荐以外观和拍照为主，除非提前订到合适登塔时段。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>先去特罗卡德罗看全景，再下到战神广场。</li><li>想登塔必须提前订票，否则排队会吃掉太多时间。</li><li>整点闪灯适合安排夜景。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：铁塔全景、夜间闪灯。</li><li>必吃：附近餐厅偏游客区，可拍完去别处吃。</li><li>必玩：特罗卡德罗到战神广场步行。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>特罗卡德罗平台拍经典全景。</li><li>塞纳河桥边拍铁塔和河。</li><li>战神广场草坪拍仰视。</li><li>热门拍照点人非常多，注意包。</li><li>登塔和外观玩法二选一更稳。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>凯旋门 Arc de Triomphe</h3>
+            <p class="meta">巴黎 · 建议 40-70 分钟 · 日落前后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>香榭丽舍轴线的核心地标，登顶视野比铁塔更适合看巴黎城市放射路网。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从地下通道进入，不要横穿环岛。</li><li>时间够就登顶，看香榭丽舍、拉德芳斯和铁塔方向。</li><li>不登顶也可以在安全岛附近拍外观。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：浮雕、无名烈士墓、放射状大道。</li><li>必吃：香榭丽舍周边价格偏高，适合只喝咖啡。</li><li>必玩：登顶看日落。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>香榭丽舍轴线方向拍凯旋门。</li><li>登顶拍铁塔和城市路网。</li><li>入口在地下通道。</li><li>登顶楼梯多，体力差可只看外观。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>蒙马特圣心大教堂 Sacré-Cœur</h3>
+            <p class="meta">巴黎 · 建议 30-45 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>蒙马特高地上的白色教堂，适合用来结束巴黎一天：看城市、看街头艺人、在小丘广场附近晚餐。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从 Anvers 或 Abbesses 上山，体力不够可坐缆车。</li><li>先在台阶看巴黎全景，再进教堂安静看内部。</li><li>晚餐可转到小丘广场或 Rue des Abbesses。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：白色穹顶、巴黎城市远景。</li><li>必吃：法式小酒馆、可丽饼、咖啡。</li><li>必玩：蒙马特坡道散步。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>台阶下方仰拍教堂。</li><li>侧面小街拍坡道和教堂一角。</li><li>台阶周边人多，小心搭讪和手绳骗局。</li><li>夜间小巷注意结伴走主路。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/20</p>
+          <h2>巴黎半日，下午飞罗马</h2>
+        </div>
+        <div class="summary">
+          <span>巴黎市内 + 机场交通 + 航班</span>
+          <strong>约 8.5-10.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>玛黑区 Le Marais</strong></td>
+        <td>早餐/街区散步：约 1-1.5 小时</td>
+        <td>地铁/步行约 20-30 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>奥赛博物馆 Musée d'Orsay</strong></td>
+        <td>可选快逛：约 1.5-2 小时；不进馆可改塞纳河散步</td>
+        <td>机场交通约 45-60 分钟，提前 2 小时到机场</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>巴黎戴高乐机场 Paris CDG Airport</strong></td>
+        <td>值机安检：建议预留约 2 小时</td>
+        <td>直飞约 2小时</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>罗马菲乌米奇诺机场 Rome FCO</strong></td>
+        <td>落地取行李：约 30-45 分钟</td>
+        <td>Leonardo Express 约 32 分钟，或打车约 40-60 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>罗马特米尼站 Roma Termini</strong></td>
+        <td>进城/酒店办理入住：约 30-60 分钟</td>
+        <td>地铁/步行约 15-25 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">6</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>特雷维喷泉 Trevi Fountain</strong></td>
+        <td>夜景散步拍照：约 20-35 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>玛黑区 Le Marais</h3>
+            <p class="meta">巴黎 · 建议 1-1.5 小时 · 上午</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>巴黎适合慢逛的街区，有老建筑、买手店、咖啡馆和犹太街小吃。压缩巴黎时它比再塞一个大馆更舒服。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从孚日广场一带开始，往 Rue des Rosiers 方向走。</li><li>挑一家咖啡店早餐，不要赶景点式打卡。</li><li>如果下雨，适合逛店和画廊。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：孚日广场、老宅立面、小店橱窗。</li><li>必吃：falafel、咖啡、甜点。</li><li>必玩：无目的街区散步。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>孚日广场拱廊。</li><li>小街转角和店铺门头。</li><li>很多店开门不算早，太早去以散步为主。</li><li>周末人多但氛围更热闹。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>奥赛博物馆 Musée d'Orsay</h3>
+            <p class="meta">巴黎 · 建议 1.5-2 小时快逛 · 上午或雨天</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>由火车站改建的博物馆，印象派和建筑空间都很好看。若巴黎只剩半天，建议快逛重点作品和大钟。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>先看五层印象派，再回到主厅看雕塑和建筑。</li><li>不要逐间看，选莫奈、雷诺阿、梵高、德加重点。</li><li>大钟窗是拍照热点，要排队等空档。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：印象派展厅、梵高作品、车站大厅。</li><li>必吃：馆内咖啡馆适合短休。</li><li>必玩：大钟窗拍剪影。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>大钟窗前拍人物剪影。</li><li>主厅高处拍旧车站空间。</li><li>周一闭馆，行程日期要确认。</li><li>和卢浮宫同天都进馆会很累。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>特雷维喷泉 Trevi Fountain</h3>
+            <p class="meta">罗马 · 建议 20-35 分钟 · 清晨或深夜</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>罗马最热闹的喷泉地标。晚上抵达罗马后来看很有仪式感，但人也会非常多。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从外围慢慢挤到栏杆边，不要在中间停太久。</li><li>按传统背对喷泉抛硬币。</li><li>和万神殿、西班牙台阶可以组成步行线。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：海神雕塑、喷泉水池和巴洛克立面。</li><li>必吃：附近 gelato 很多，但看评分别随手买。</li><li>必玩：抛硬币许愿。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>清晨站在正中拍完整喷泉。</li><li>侧面低角度拍水池和雕塑。</li><li>严禁下水或坐在保护区域。</li><li>人多时扒手风险高。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/21</p>
+          <h2>罗马古城精华</h2>
+        </div>
+        <div class="summary">
+          <span>步行 + 地铁</span>
+          <strong>约 7.5-9.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>罗马斗兽场 Colosseum</strong></td>
+        <td>参观：约 1.5-2 小时，建议预约</td>
+        <td>步行约 5-10 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>古罗马广场 Roman Forum</strong></td>
+        <td>参观：约 1.5-2 小时</td>
+        <td>步行约 15-20 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>真理之口 Bocca della Verità</strong></td>
+        <td>拍照打卡：约 20-40 分钟，排队长就外观看一眼</td>
+        <td>步行约 15-20 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>威尼斯广场 Piazza Venezia</strong></td>
+        <td>外观拍照：约 20-30 分钟</td>
+        <td>步行约 10-15 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>万神殿 Pantheon</strong></td>
+        <td>参观：约 30-45 分钟</td>
+        <td>步行约 5 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">6</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>纳沃纳广场 Piazza Navona</strong></td>
+        <td>散步/咖啡：约 30-45 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>罗马斗兽场 Colosseum</h3>
+            <p class="meta">罗马 · 建议 1.5-2 小时 · 预约早场</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>古罗马最具代表性的遗迹，也是罗马古城日的核心。建议和古罗马广场联票一起安排。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>提前买官方时段票，早场避开暴晒和团队高峰。</li><li>内部按环形动线看竞技场、看台和展板。</li><li>如果预算允许，带 Arena 或 Underground 的票体验更完整。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：竞技场内部、外立面拱券、君士坦丁凯旋门。</li><li>必吃：附近餐厅游客化，午餐往 Monti 区走更好。</li><li>必玩：斗兽场+古罗马广场联动。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>Colosseo 地铁口外拍完整外立面。</li><li>Oppio Hill 方向拍斗兽场全景。</li><li>实名票和安检要留时间。</li><li>夏天暴晒，帽子和水很重要。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>古罗马广场 Roman Forum</h3>
+            <p class="meta">罗马 · 建议 1.5-2 小时 · 斗兽场后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>古罗马公共生活中心的遗址群，单看石头会抽象，最好提前了解或租语音导览。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从斗兽场进入后按主路走，重点看提图斯凯旋门、元老院、神庙遗迹。</li><li>上帕拉蒂尼山看广场整体。</li><li>不要在中午最晒时久站。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：元老院、凯旋门、帕拉蒂尼山视角。</li><li>必吃：出来后去 Monti 或历史中心吃 pasta。</li><li>必玩：把它当作一条考古步道，而不是单点景点。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>帕拉蒂尼山高处拍遗址全景。</li><li>凯旋门与斗兽场方向构图。</li><li>遮阴少，夏天非常耗体力。</li><li>有讲解会比纯走马观花强很多。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>真理之口 Bocca della Verità</h3>
+            <p class="meta">罗马 · 建议 20-40 分钟 · 古罗马广场后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>《罗马假日》同款打卡点，位于圣母大殿门廊内。它更像拍照梗点，不是重型景点，排队长就不要硬耗。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从古罗马广场步行过去，先看现场队伍长度。</li><li>人少就排队把手伸进石雕口中拍经典照。</li><li>如果队伍很长，只外观看一眼，再继续去威尼斯广场。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：真理之口石雕、圣母大殿门廊。</li><li>必吃：不建议在这里专门吃饭，继续往历史中心或 Monti。</li><li>必玩：《罗马假日》同款动作照。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>门廊内拍伸手动作。</li><li>同行一人提前调好手机，排到时快速拍。</li><li>排队不可控，超过 20 分钟就建议放弃。</li><li>这里是轻量点，不要为它压缩斗兽场和古罗马广场。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>威尼斯广场 Piazza Venezia</h3>
+            <p class="meta">罗马 · 建议 20-30 分钟 · 古罗马广场后顺路</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>罗马市中心交通和视觉节点，白色维托里亚诺纪念堂很醒目。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从古罗马广场沿帝国大道走过来。</li><li>外观看纪念堂，时间够可上平台看城市。</li><li>作为去万神殿前的过渡点即可。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：维托里亚诺纪念堂、帝国大道视角。</li><li>必吃：不建议在广场边解决正餐。</li><li>必玩：从这里步行进历史中心。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场对面拍白色纪念堂正面。</li><li>纪念堂台阶上回拍城市车流。</li><li>车流复杂，按人行横道走。</li><li>这里不是久留点。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>万神殿 Pantheon</h3>
+            <p class="meta">罗马 · 建议 30-45 分钟 · 下午</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>保存极完整的古罗马建筑，穹顶和中央圆洞是核心看点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>先在广场看柱廊和山墙，再进内部抬头看穹顶。</li><li>站在圆洞下方感受光线变化。</li><li>和纳沃纳广场、特雷维喷泉步行串联。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：穹顶圆洞、柱廊、拉斐尔墓。</li><li>必吃：附近 Tazza d Oro 或 Sant Eustachio 咖啡。</li><li>必玩：广场坐一会儿看街头氛围。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场喷泉前拍万神殿正面。</li><li>内部仰拍圆洞，但注意不要挡路。</li><li>进入可能需要购票或预约，按现场规则。</li><li>广场餐厅位置好但价格偏游客区。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>纳沃纳广场 Piazza Navona</h3>
+            <p class="meta">罗马 · 建议 30-45 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>巴洛克广场，长椭圆形空间来自古竞技场遗址，核心是四河喷泉。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从万神殿步行 5 分钟到达。</li><li>围着广场走一圈，看四河喷泉和圣阿涅塞教堂立面。</li><li>傍晚适合坐下喝一杯，但正餐可以去旁边小巷。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：四河喷泉、广场空间、街头艺人。</li><li>必吃：附近小巷找 carbonara、cacio e pepe。</li><li>必玩：广场边慢坐 20 分钟。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>四河喷泉前拍教堂背景。</li><li>广场一端拍长轴线。</li><li>广场正边餐厅通常景观溢价高。</li><li>晚间人多但氛围好。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/22</p>
+          <h2>梵蒂冈，下午罗马慢游</h2>
+        </div>
+        <div class="summary">
+          <span>地铁/步行 + 咖啡休整</span>
+          <strong>约 6.5-8.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>梵蒂冈博物馆 Vatican Museums</strong></td>
+        <td>参观：约 2.5-3 小时，必须预约</td>
+        <td>步行约 15-20 分钟，安检排队另计</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣彼得大教堂 St. Peter's Basilica</strong></td>
+        <td>参观：约 1-1.5 小时</td>
+        <td>步行约 5 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣彼得广场 St. Peter's Square</strong></td>
+        <td>拍照/休整：约 20-30 分钟</td>
+        <td>沿台伯河步行约 10-15 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣天使城堡 Castel Sant'Angelo</strong></td>
+        <td>外观/河边散步：约 30-45 分钟</td>
+        <td>公交/步行约 20-30 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>人民广场 Piazza del Popolo</strong></td>
+        <td>咖啡/广场休整：约 30-45 分钟</td>
+        <td>步行约 5-10 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">6</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>平丘观景台 Pincio Terrace</strong></td>
+        <td>傍晚看罗马屋顶：约 30-45 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>梵蒂冈博物馆 Vatican Museums</h3>
+            <p class="meta">梵蒂冈 · 建议 2.5-3 小时 · 预约早场</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>梵蒂冈最重要的艺术博物馆群，西斯廷礼拜堂是终点，但沿途地图廊和拉斐尔房间也值得看。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>必须提前预约，按时段入场。</li><li>重点动线：松果庭院、地图廊、拉斐尔房间、西斯廷礼拜堂。</li><li>不要在前半段看太慢，否则到西斯廷礼拜堂时体力不够。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：西斯廷礼拜堂天顶画、地图廊、拉斐尔房间。</li><li>必吃：出馆后去 Borgo Pio 一带找午餐。</li><li>必玩：看完直接接圣彼得大教堂。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>螺旋楼梯可拍照。</li><li>西斯廷礼拜堂内通常禁止拍照，遵守规定。</li><li>安检和人流都需要时间。</li><li>肩膀膝盖着装要注意。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣彼得大教堂 St. Peter's Basilica</h3>
+            <p class="meta">梵蒂冈 · 建议 1-1.5 小时 · 博物馆后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>天主教世界最重要的教堂之一，空间尺度巨大，米开朗琪罗《圣殇》和穹顶是重点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>进门后先看右侧《圣殇》。</li><li>沿中轴看青铜华盖和主祭坛。</li><li>体力好可登穹顶，但要额外排队和耗时。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：《圣殇》、贝尔尼尼青铜华盖、穹顶。</li><li>必吃：离开梵蒂冈后去 Prati 区吃饭。</li><li>必玩：登穹顶看圣彼得广场。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场中轴线拍教堂正面。</li><li>穹顶高处拍钥匙孔形广场。</li><li>安检排队不可控。</li><li>教堂着装要求严格。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣彼得广场 St. Peter's Square</h3>
+            <p class="meta">梵蒂冈 · 建议 20-30 分钟 · 离开大教堂前后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>贝尔尼尼设计的椭圆广场，两侧柱廊像张开的手臂，是拍梵蒂冈尺度感的最佳地点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从广场中心方尖碑位置看整体对称。</li><li>找地面圆点看柱廊视觉重合效果。</li><li>和大教堂正面一起拍。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：柱廊、方尖碑、大教堂正立面。</li><li>必吃：广场内不适合吃，去 Prati。</li><li>必玩：找柱廊透视点。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场中轴线拍大教堂。</li><li>柱廊下拍重复拱柱。</li><li>大型活动时广场动线会变化。</li><li>日晒强，注意补水。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣天使城堡 Castel Sant'Angelo</h3>
+            <p class="meta">罗马 · 建议 30-45 分钟 · 下午</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>台伯河边的圆形堡垒，连接梵蒂冈和罗马老城。休闲版不强制进馆，重点是桥、河岸和城堡外观。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从圣彼得广场沿 Via della Conciliazione 走到城堡。</li><li>不进馆也可以在桥上和河边拍照。</li><li>如果当天体力好，再决定是否买票进城堡看屋顶视角。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：圣天使桥、城堡圆形外观、台伯河。</li><li>必吃：Prati 或河对岸小巷找咖啡和 gelato。</li><li>必玩：用这段作为梵蒂冈后的放松过渡。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>圣天使桥上拍城堡正面。</li><li>台伯河对岸拍城堡和桥同框。</li><li>傍晚侧光下拍桥上雕像。</li><li>城堡内部需要额外时间，休闲版不建议硬塞。</li><li>桥上游客多，注意随身物。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>人民广场 Piazza del Popolo</h3>
+            <p class="meta">罗马 · 建议 30-45 分钟 · 下午或傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>罗马北侧的大型城市广场，适合从梵蒂冈慢慢转到西班牙台阶一带，节奏比古城核心更松。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>坐公交或步行到人民广场，先看广场和双子教堂外观。</li><li>广场边喝咖啡休息，不急着赶下一个点。</li><li>顺路上平丘观景台看夕阳。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：方尖碑、双子教堂、广场尺度。</li><li>必吃：附近咖啡和 gelato 即可，正餐留到晚餐。</li><li>必玩：把这里当成罗马慢游的中转点。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场中心回拍双子教堂。</li><li>从平丘上方俯拍广场。</li><li>广场开阔，夏天下午会晒。</li><li>正边餐厅更多是位置溢价。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>平丘观景台 Pincio Terrace</h3>
+            <p class="meta">罗马 · 建议 30-45 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>人民广场上方的经典观景平台，可以看罗马屋顶、教堂穹顶和夕阳，是这天休闲感最强的一站。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从人民广场旁边缓坡上去，不用赶。</li><li>傍晚看城市变色，拍完再下去吃晚餐。</li><li>如果天气热，就把这里压到日落前后。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：人民广场俯视、罗马天际线、夕阳。</li><li>必吃：下山后去人民广场或西班牙台阶附近晚餐。</li><li>必玩：坐一会儿，别只拍照打卡。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>栏杆边拍人民广场全景。</li><li>傍晚逆光拍人像剪影。</li><li>长焦压缩教堂穹顶和屋顶层次。</li><li>日落前人会变多，提前一点到更稳。</li><li>夜间回程走主路。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/23</p>
+          <h2>罗马休闲半日，傍晚到威尼斯</h2>
+        </div>
+        <div class="summary">
+          <span>步行 + 火车/高铁 + 水上巴士</span>
+          <strong>约 7.5-9.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>波格赛公园 Villa Borghese</strong></td>
+        <td>上午慢逛：约 1-1.5 小时</td>
+        <td>步行约 15-20 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>西班牙台阶 Spanish Steps</strong></td>
+        <td>咖啡/购物街：约 45-60 分钟</td>
+        <td>地铁/打车约 15-25 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>罗马特米尼站 Roma Termini</strong></td>
+        <td>取行李/候车：建议预留约 30-45 分钟</td>
+        <td>高铁约 3小时45分-4小时15分，建议提前订直达车次</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>威尼斯圣露西亚站 Venezia Santa Lucia</strong></td>
+        <td>出站/买水上巴士票：约 15-25 分钟</td>
+        <td>水上巴士约 35-45 分钟，或步行约 40-50 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣马可广场 Piazza San Marco</strong></td>
+        <td>夜景散步：约 30-60 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>波格赛公园 Villa Borghese</h3>
+            <p class="meta">罗马 · 建议 1-1.5 小时 · 上午</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>罗马市中心的大公园，适合旅行中段放慢速度。休闲版不强制进波格赛美术馆，主要是散步、树荫和城市观景。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>上午 9 点后慢慢出门，先在公园里走一圈。</li><li>如果想看美术馆，需要提前预约；不预约就只做公园散步。</li><li>从公园南侧走向西班牙台阶，午饭后去 Termini。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：公园林荫道、湖区、城市观景点。</li><li>必吃：公园边咖啡或西班牙台阶附近午餐。</li><li>必玩：给这天留出真正休息的空白。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>林荫道拍人像。</li><li>观景点拍罗马屋顶。</li><li>公园长椅和树影适合生活感照片。</li><li>不进美术馆就不需要排队。</li><li>这天还要去威尼斯，别把上午拖得太满。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>西班牙台阶 Spanish Steps</h3>
+            <p class="meta">罗马 · 建议 45-60 分钟 · 上午或午前</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>罗马经典城市阶梯，连接西班牙广场和山上教堂。放到休闲日更合适，可以顺路逛 Via dei Condotti 和吃午餐。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从波格赛公园南侧慢慢走下来。</li><li>先看破船喷泉，再沿台阶往上或从上方平台回看街景。</li><li>午餐后回酒店取行李或直接去 Termini。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：台阶、破船喷泉、Trinita dei Monti 教堂。</li><li>必吃：附近有提拉米苏、gelato 和咖啡。</li><li>必玩：顺路逛 Via dei Condotti 橱窗。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>清晨或午前从下往上拍台阶。</li><li>上方平台回拍城市街景。</li><li>购物街入口拍罗马假日感街景。</li><li>很多区域禁止坐台阶，按现场提示。</li><li>购物街人多，注意随身物。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣马可广场 Piazza San Marco</h3>
+            <p class="meta">威尼斯 · 建议 30-60 分钟 · 清晨或夜晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>威尼斯的主广场，白天宏伟，夜里浪漫。你们抵达当晚看夜景，次日再进大教堂和总督宫。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>晚上先看广场灯光和拱廊。</li><li>第二天清晨再来拍少人版本。</li><li>和大教堂、钟楼、总督宫一起安排。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：大教堂立面、钟楼、拱廊。</li><li>必吃：广场咖啡馆位置好但价格高，体验型即可。</li><li>必玩：夜晚听现场音乐氛围。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>清晨广场中轴线拍大教堂。</li><li>夜晚拱廊灯光下拍人像。</li><li>涨潮季可能有积水，6 月通常少但仍看天气。</li><li>不要喂鸽子。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/24</p>
+          <h2>威尼斯主岛完整一天</h2>
+        </div>
+        <div class="summary">
+          <span>步行 + 水上巴士</span>
+          <strong>约 7-9.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣马可广场 Piazza San Marco</strong></td>
+        <td>广场拍照/看外观：约 30-45 分钟</td>
+        <td>步行 2-3 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>圣马可大教堂 Basilica di San Marco</strong></td>
+        <td>参观：约 45-75 分钟，建议预约</td>
+        <td>步行 2-3 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>总督宫 Doge's Palace</strong></td>
+        <td>参观：约 1.5-2 小时</td>
+        <td>步行几分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>叹息桥 Bridge of Sighs</strong></td>
+        <td>拍照打卡：约 10-15 分钟</td>
+        <td>步行约 10-15 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>里亚托桥 Rialto Bridge</strong></td>
+        <td>桥区散步拍照：约 25-40 分钟</td>
+        <td>步行/水上巴士约 25-40 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">6</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>卡纳雷吉欧区 Cannaregio</strong></td>
+        <td>傍晚散步/咖啡：约 45-75 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣马可广场 Piazza San Marco</h3>
+            <p class="meta">威尼斯 · 建议 30-60 分钟 · 清晨或夜晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>威尼斯的主广场，白天宏伟，夜里浪漫。你们抵达当晚看夜景，次日再进大教堂和总督宫。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>晚上先看广场灯光和拱廊。</li><li>第二天清晨再来拍少人版本。</li><li>和大教堂、钟楼、总督宫一起安排。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：大教堂立面、钟楼、拱廊。</li><li>必吃：广场咖啡馆位置好但价格高，体验型即可。</li><li>必玩：夜晚听现场音乐氛围。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>清晨广场中轴线拍大教堂。</li><li>夜晚拱廊灯光下拍人像。</li><li>涨潮季可能有积水，6 月通常少但仍看天气。</li><li>不要喂鸽子。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>圣马可大教堂 Basilica di San Marco</h3>
+            <p class="meta">威尼斯 · 建议 45-75 分钟 · 预约早场</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>威尼斯最重要教堂，拜占庭风格马赛克和金色内部是重点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>预约入场减少排队。</li><li>重点看金色马赛克、Pala d Oro 和二层露台。</li><li>和总督宫安排在同一上午最顺。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：穹顶马赛克、金色祭坛屏、露台马像。</li><li>必吃：离开圣马可区后去小巷吃 cicchetti。</li><li>必玩：露台看圣马可广场。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>外立面清晨拍细节。</li><li>露台拍广场和钟楼。</li><li>内部拍照按现场规定。</li><li>服装要覆盖肩膀膝盖。</li><li>背包可能需要寄存。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>总督宫 Doge's Palace</h3>
+            <p class="meta">威尼斯 · 建议 1.5-2 小时 · 大教堂后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>威尼斯共和国权力中心，内部大厅、金色楼梯和叹息桥通道很有看点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>按官方动线看庭院、金色楼梯、议事大厅。</li><li>走过叹息桥内部通道，看囚牢方向。</li><li>喜欢历史可以租语音导览。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：金色楼梯、大议会厅、叹息桥通道。</li><li>必吃：宫殿附近贵，午餐可往 Castello 或 Rialto 后巷走。</li><li>必玩：从内部走叹息桥。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>外部柱廊拍哥特立面。</li><li>庭院内拍楼梯和拱廊。</li><li>和圣马可大教堂连着看会信息量大，中间可休息。</li><li>旺季提前订票。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>叹息桥 Bridge of Sighs</h3>
+            <p class="meta">威尼斯 · 建议 10-15 分钟 · 总督宫前后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>连接总督宫和旧监狱的小桥，名字来自囚犯传说。外观看很快，真正的体验是在总督宫内部走过它。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>外部从 Ponte della Paglia 拍桥。</li><li>参观总督宫时从内部经过。</li><li>不要为它单独绕路，和总督宫绑定。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：白色封闭桥身和运河。</li><li>必吃：附近不建议正餐。</li><li>必玩：内外两个视角都看。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>Ponte della Paglia 桥上拍叹息桥正面。</li><li>早晨人少时更好拍。</li><li>拍照点拥挤，注意别挡路太久。</li><li>贡多拉从桥下过时可抓拍。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>里亚托桥 Rialto Bridge</h3>
+            <p class="meta">威尼斯 · 建议 25-40 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>横跨大运河的经典桥梁，周边市场和商铺密集，是威尼斯主岛最热闹的区域之一。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>先从桥上看大运河，再下到岸边拍桥。</li><li>如果赶上午，可顺路看 Rialto 市场。</li><li>傍晚适合看船流和金色光线。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：大运河船流、桥上商铺。</li><li>必吃：附近 bacaro 小酒馆，点 cicchetti 和 spritz。</li><li>必玩：桥两侧换角度拍。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>岸边拍整座桥和大运河。</li><li>桥中央拍运河纵深。</li><li>桥上很挤，背包放前面。</li><li>不要在桥中央长时间停留。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>卡纳雷吉欧区 Cannaregio</h3>
+            <p class="meta">威尼斯 · 建议 45-75 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>比圣马可和里亚托更生活化的区域，运河、小酒馆和犹太区散步都很舒服。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>沿 Fondamenta della Misericordia 走，找 bacaro 小吃。</li><li>走进安静小桥和支渠，感受威尼斯居民区。</li><li>适合安排晚餐和饭后散步。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：小运河、犹太区、安静桥巷。</li><li>必吃：cicchetti、海鲜小吃、spritz。</li><li>必玩：随意过桥，不要只走主路。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>小桥上拍运河和餐桌。</li><li>傍晚暖光拍水面反射。</li><li>晚上比圣马可安静，但仍走亮灯主路。</li><li>小店座位少，饭点可能要等。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/25</p>
+          <h2>威尼斯上午，下午到米兰</h2>
+        </div>
+        <div class="summary">
+          <span>步行 + 水上巴士 + 高铁</span>
+          <strong>约 7.5-9.5 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>新码头 Fondamente Nove</strong></td>
+        <td>去玻璃岛的上船点，候船/休整：约 10-20 分钟</td>
+        <td>水上巴士约 10-20 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>穆拉诺岛 Murano</strong></td>
+        <td>玻璃岛小行程：看玻璃工坊、逛玻璃店和小运河，约 1.5-2.5 小时</td>
+        <td>水上巴士/步行约 25-40 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>里亚托桥 Rialto Bridge</strong></td>
+        <td>返回主岛后简单午餐/拍照：约 30-45 分钟</td>
+        <td>水上巴士约 15-20 分钟，或步行约 25 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>威尼斯圣露西亚站 Venezia Santa Lucia</strong></td>
+        <td>取行李/候车：建议预留约 25-40 分钟</td>
+        <td>高铁约 2小时25分-2小时35分</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>米兰中央站 Milano Centrale</strong></td>
+        <td>到站/去酒店放行李：约 30-60 分钟</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>新码头 Fondamente Nove</h3>
+            <p class="meta">威尼斯 · 建议 10-20 分钟 · 去穆拉诺前</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>前往穆拉诺等外岛的常用码头区，本身不是重景点，但海面视野开阔，适合等船时看风景。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>提前看水上巴士站台和方向。</li><li>等船时拍泻湖和远处岛屿。</li><li>不要把它当景点久留，主要是交通节点。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：泻湖开阔水面。</li><li>必吃：附近简单咖啡或面包。</li><li>必玩：坐水上巴士去穆拉诺。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>码头边拍船和海面。</li><li>清晨光线更干净。</li><li>确认线路方向，外岛船别坐反。</li><li>水上巴士票提前买好更省心。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>穆拉诺岛 Murano</h3>
+            <p class="meta">威尼斯 · 建议 1.5-2.5 小时 · 上午</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>以玻璃工艺闻名的威尼斯外岛，比主岛松弛，适合 6/25 上午做一个 2 小时左右的小行程。重点不是赶景点数量，而是坐船、看玻璃、逛小运河，午后回主岛取行李去米兰。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>建议 9:00 左右从 Fondamente Nove 上船，坐水上巴士去 Murano Faro 或 Murano Colonna，船程约 10-20 分钟。</li><li>上岛后先沿主运河 Fondamenta dei Vetrai 慢走，看玻璃店橱窗和小桥，控制在 30-40 分钟。</li><li>挑一家玻璃工坊看吹制演示，通常 20-40 分钟；如果需要收费，先问清价格和是否强制购物。</li><li>顺路看 Basilica dei Santi Maria e Donato 外观/内部马赛克，作为岛上文化点补充，约 20-30 分钟。</li><li>11:30-12:00 左右返程回威尼斯主岛，留时间午餐、取行李、去 Santa Lucia 坐高铁到米兰。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：玻璃工坊吹制演示、Fondamenta dei Vetrai 玻璃店街、Santi Maria e Donato 教堂。</li><li>必吃：岛上轻食/咖啡即可，正餐建议回主岛或火车前解决，避免因为等餐错过回程船。</li><li>必玩：挑一件小玻璃饰品或耳环作纪念，别买太大太重的玻璃摆件，后面还要拖行李去米兰。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>Fondamenta dei Vetrai 运河桥上拍两侧玻璃店和水道。</li><li>玻璃橱窗拍细节特写，适合做旅行拼图素材。</li><li>Murano Faro 灯塔附近拍船、码头和开阔水面。</li><li>不要把 Murano、Burano、Torcello 三岛都塞进 6/25；下午要去米兰，三岛会明显压缩主行程。</li><li>有些“免费玻璃演示”可能会引导购物，进门前先确认费用和时长。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>里亚托桥 Rialto Bridge</h3>
+            <p class="meta">威尼斯 · 建议 25-40 分钟 · 傍晚</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>横跨大运河的经典桥梁，周边市场和商铺密集，是威尼斯主岛最热闹的区域之一。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>先从桥上看大运河，再下到岸边拍桥。</li><li>如果赶上午，可顺路看 Rialto 市场。</li><li>傍晚适合看船流和金色光线。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：大运河船流、桥上商铺。</li><li>必吃：附近 bacaro 小酒馆，点 cicchetti 和 spritz。</li><li>必玩：桥两侧换角度拍。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>岸边拍整座桥和大运河。</li><li>桥中央拍运河纵深。</li><li>桥上很挤，背包放前面。</li><li>不要在桥中央长时间停留。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+    <section class="day">
+      <header class="day-head">
+        <div>
+          <p class="date">6/26</p>
+          <h2>米兰半日，20:00 返程</h2>
+        </div>
+        <div class="summary">
+          <span>地铁 + 机场快线</span>
+          <strong>约 7.5-9 小时</strong>
+        </div>
+      </header>
+      <h3 class="section-title">当天顺序与景点间通勤</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>类型</th>
+            <th>点位</th>
+            <th>停留/说明</th>
+            <th>去下一站</th>
+          </tr>
+        </thead>
+        <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>米兰大教堂 Duomo di Milano</strong></td>
+        <td>教堂+屋顶/购物：约 1.5-2.5 小时，建议预约</td>
+        <td>步行 2 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">2</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>埃马努埃莱二世长廊 Galleria Vittorio Emanuele II</strong></td>
+        <td>长廊拍照/逛店：约 20-40 分钟</td>
+        <td>地铁+步行约 20-30 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">3</td>
+        <td><span class="pill spot">景点</span></td>
+        <td><strong>恩宠圣母教堂 Santa Maria delle Grazie</strong></td>
+        <td>《最后的晚餐》参观：约 30-45 分钟，必须预约</td>
+        <td>地铁约 20-30 分钟</td>
+      </tr>
+    
+      <tr>
+        <td class="num">4</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>米兰中央站 Milano Centrale</strong></td>
+        <td>取行李/候车：建议 16:00 左右到达</td>
+        <td>Malpensa Express 约 53-57 分钟，20:00 航班建议 17:00 前后到机场</td>
+      </tr>
+    
+      <tr>
+        <td class="num">5</td>
+        <td><span class="pill node">交通节点</span></td>
+        <td><strong>米兰马尔彭萨机场 Milan Malpensa Airport</strong></td>
+        <td>值机安检：建议 17:00 前后到机场</td>
+        <td>当天结束</td>
+      </tr>
+    </tbody>
+      </table>
+      <h3 class="section-title">景点攻略</h3>
+      <div class="cards">
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>米兰大教堂 Duomo di Milano</h3>
+            <p class="meta">米兰 · 建议 1.5-2.5 小时 · 上午</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>米兰最重要地标，哥特式立面和屋顶露台都值得看。最后一天建议早上预约，留足去机场时间。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>预约教堂+屋顶套票，优先看屋顶。</li><li>屋顶走道能近距离看尖塔和雕塑。</li><li>下楼后看内部彩窗和中殿。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：屋顶尖塔、正立面、彩窗。</li><li>必吃：附近可以试 panzerotti、咖啡、gelato。</li><li>必玩：屋顶露台步行。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>广场正中拍立面。</li><li>屋顶拍尖塔森林和城市。</li><li>长廊入口处拍教堂侧面。</li><li>安检严格，别带大件。</li><li>屋顶台阶多，可选电梯票。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>埃马努埃莱二世长廊 Galleria Vittorio Emanuele II</h3>
+            <p class="meta">米兰 · 建议 20-40 分钟 · 大教堂后</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>米兰大教堂旁的华丽拱廊，玻璃穹顶、马赛克地面和奢侈品橱窗是重点。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>从大教堂广场直接进入长廊。</li><li>抬头看玻璃穹顶，再看地面马赛克。</li><li>想体验可以喝一杯咖啡，但价格会偏高。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：中央穹顶、马赛克地面、Prada 老店。</li><li>必吃：附近 panzerotti、espresso。</li><li>必玩：从长廊走到斯卡拉歌剧院方向。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>中央十字口仰拍穹顶。</li><li>长廊入口回拍大教堂。</li><li>人流密集，注意包。</li><li>奢侈品店看橱窗即可，不必久留。</li></ul>
+          </section>
+        </div>
+      </article>
+    
+      <article class="spot-card">
+        <header>
+          <div>
+            <h3>恩宠圣母教堂 Santa Maria delle Grazie</h3>
+            <p class="meta">米兰 · 建议 30-45 分钟 · 按预约时段</p>
+          </div>
+        </header>
+        <div class="spot-grid">
+          <section>
+            <h4>特点</h4>
+            <p>达芬奇《最后的晚餐》所在地。真正要抢的是壁画参观票，不是普通进教堂。</p>
+          </section>
+          <section>
+            <h4>主要游玩内容</h4>
+            <ul><li>必须提前预约 Cenacolo Vinciano 时段。</li><li>按时到达，参观窗口很短，集中看壁画构图和人物表情。</li><li>看完可顺路回米兰中央站取行李。</li></ul>
+          </section>
+          <section>
+            <h4>必看 / 必玩</h4>
+            <ul><li>必看：《最后的晚餐》壁画。</li><li>必吃：附近咖啡馆简单休息即可。</li><li>必玩：预约成功本身就是重点。</li></ul>
+          </section>
+          <section>
+            <h4>拍照与提醒</h4>
+            <ul><li>壁画厅通常限制拍照，遵守现场规定。</li><li>教堂外观可在广场拍。</li><li>票非常难订，越早越好。</li><li>迟到可能无法入场。</li></ul>
+          </section>
+        </div>
+      </article>
+    </div>
+    </section>
+  
+</main>
+</body>
+</html>

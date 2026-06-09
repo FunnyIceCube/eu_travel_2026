@@ -782,6 +782,7 @@
         <button id="showAll" class="active" type="button">显示全程</button>
         <button id="fitAll" type="button">缩放到全图</button>
         <button id="openGuides" type="button">景点攻略</button>
+        <button id="openPrint" type="button">打印版</button>
       </div>
       <div id="routeStatus" class="route-status">点击每段交通下方的路线按钮，会直接在右侧地图中绘制路线。</div>
       <div class="route-key-panel" aria-label="高德路线服务 Key">
@@ -1809,6 +1810,9 @@
     document.getElementById("fitAll").addEventListener("click", () => renderMap(activeDayId));
     document.getElementById("openGuides").addEventListener("click", () => {
       window.location.href = "attraction-guides-rome-relaxed.html";
+    });
+    document.getElementById("openPrint").addEventListener("click", () => {
+      window.location.href = "printable-itinerary-rome-relaxed.html";
     });
 
     setupAmapKeyPanel();
